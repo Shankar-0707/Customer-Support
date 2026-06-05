@@ -12,7 +12,7 @@ export default function NewTicketModal({ onClose, onSuccess, preselectedUserId }
   const [users, setUsers] = useState<User[]>([]);
   const [userId, setUserId] = useState(preselectedUserId || "");
   const [subject, setSubject] = useState("");
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'critical'>('medium');
+
   
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -48,7 +48,7 @@ export default function NewTicketModal({ onClose, onSuccess, preselectedUserId }
     setError(null);
 
     try {
-      const res = await createTicket(userId, trimmedSubject, trimmedSubject, priority);
+      const res = await createTicket(userId, trimmedSubject, trimmedSubject, 'medium');
       if (res.success && res.data) {
         onSuccess(res.data.ticket.id);
       } else {
@@ -120,21 +120,7 @@ export default function NewTicketModal({ onClose, onSuccess, preselectedUserId }
             />
           </div>
 
-          {/* Priority */}
-          <div className="form-group">
-            <label className="form-label">Priority</label>
-            <select
-              className="form-select"
-              value={priority}
-              onChange={(e) => setPriority(e.target.value as any)}
-              required
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="critical">Critical</option>
-            </select>
-          </div>
+
 
           {/* Form Actions */}
           <div className="modal-actions">

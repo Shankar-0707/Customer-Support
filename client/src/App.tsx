@@ -237,7 +237,6 @@ function App() {
                     <tr>
                       <th>Subject</th>
                       <th>Customer Name</th>
-                      <th>Priority</th>
                       <th>Status</th>
                       <th>Created At</th>
                     </tr>
@@ -252,9 +251,6 @@ function App() {
                           {ticket.subject}
                         </td>
                         <td>{ticket.customer_name}</td>
-                        <td className={`priority-${ticket.priority}`}>
-                          {ticket.priority}
-                        </td>
                         <td>
                           <span
                             className={`badge ${ticket.status === "resolved" ? "badge-resolved" : "badge-open"}`}

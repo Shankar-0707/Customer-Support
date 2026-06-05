@@ -161,7 +161,6 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
 
           <div className="chat-side-detail">
             <div><strong>Customer:</strong> {ticket.customer_name} ({ticket.customer_email})</div>
-            <div><strong>Priority:</strong> <span style={{ textTransform: 'capitalize' }}>{ticket.priority}</span></div>
             <div><strong>Opened:</strong> {new Date(ticket.created_at).toLocaleString()}</div>
           </div>
 
@@ -248,7 +247,7 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
               </span>
             </h3>
             <div className="chat-pane-meta">
-              Priority: <strong style={{ textTransform: 'uppercase' }}>{ticket.priority}</strong> &bull; Opened: {new Date(ticket.created_at).toLocaleString()}
+              Opened: {new Date(ticket.created_at).toLocaleString()}
             </div>
           </div>
 

@@ -18,18 +18,7 @@ export default function DashboardView({
     (t) => t.status === "resolved",
   ).length;
 
-  const getPriorityClass = (priority: string) => {
-    switch (priority) {
-      case "critical":
-        return "priority-high";
-      case "high":
-        return "priority-high";
-      case "medium":
-        return "priority-medium";
-      default:
-        return "priority-low";
-    }
-  };
+
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -249,10 +238,6 @@ export default function DashboardView({
                       </div>
                       <div className="ticket-detail-meta">
                         <span>#{ticket.id.substring(0, 8)}</span>
-                        <span>•</span>
-                        <span className={getPriorityClass(ticket.priority)}>
-                          {ticket.priority.toUpperCase()}
-                        </span>
                       </div>
                     </td>
                     <td>
