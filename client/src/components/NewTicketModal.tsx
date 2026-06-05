@@ -89,13 +89,24 @@ export default function NewTicketModal({ onClose, onSuccess, preselectedUserId }
             <label className="form-label">Customer Contact</label>
             {loadingUsers ? (
               <div style={{ fontSize: "12px", color: "var(--color-text-muted)" }}>Loading customers...</div>
+            ) : preselectedUserId ? (
+              <input
+                type="text"
+                className="form-input"
+                value={
+                  users.find((u) => u.id === preselectedUserId)
+                    ? `${users.find((u) => u.id === preselectedUserId)?.name} (${users.find((u) => u.id === preselectedUserId)?.email})`
+                    : ""
+                }
+                readOnly
+                disabled
+              />
             ) : (
               <select
                 className="form-select"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
                 required
-                disabled={!!preselectedUserId}
               >
                 {users.map((user) => (
                   <option key={user.id} value={user.id}>
