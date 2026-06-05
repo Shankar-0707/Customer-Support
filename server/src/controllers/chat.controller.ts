@@ -50,11 +50,6 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
     if (session) {
       const userId = session.user_id;
 
-      // Retain this message in customer memory bank asynchronously (Phase 3)
-      hindsightService.retainMemory(userId, `Customer said: ${content}`).catch((err) => {
-        console.error("Failed to retain customer message in memory:", err);
-      });
-
       try {
         // Query specific customer memory
         customerMemories = await hindsightService.recallMemory(userId, content);

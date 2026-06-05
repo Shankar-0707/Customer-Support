@@ -1,7 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import * as ticketService from "../services/ticket.service.js";
-import { getOrCreateChatSession, addMessage } from "../services/chat.service.js";
-import * as hindsightService from "../services/hindsight.service.js";
+import { getOrCreateChatSession } from "../services/chat.service.js";
 
 /**
  * Get all tickets.
@@ -53,18 +52,9 @@ export async function create(req: Request, res: Response, next: NextFunction): P
     // 2. Create an associated chat session
     const session = await getOrCreateChatSession(ticket.id, userId);
 
-    // 3. Add the ticket description as the first user message in the chat session
-    await addMessage(session.id, 'user', description);
 
-    // 4. Retain the ticket details in customer memory (Phase 3)
-    try {
-      await hindsightService.retainMemory(
-        userId,
-        `Opened ticket "${subject}" with description: ${description}`
-      );
-    } catch (err) {
-      console.error("Failed to retain ticket creation in memory:", err);
-    }
+
+
 
     res.status(201).json({
       success: true,
