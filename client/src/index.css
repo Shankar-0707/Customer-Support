@@ -683,6 +683,7 @@ img { max-width: 100%; display: block; }
   line-height: 0.98;
   letter-spacing: -0.03em;
   max-width: 320px;
+  color: #ffffff;
 }
 
 .dashboard-welcome p {
@@ -2206,9 +2207,6 @@ img { max-width: 100%; display: block; }
   font-size: 12px;
 }
 
-.dashboard-welcome h3 {
-  color: #0f172a;
-}
 
 .dashboard-welcome p,
 .portal-welcome-subtitle,
