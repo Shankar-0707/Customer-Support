@@ -150,143 +150,45 @@ function App() {
             viewMode={portalMode}
           />
         ) : (
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "var(--spacing-xl)",
-              backgroundColor: "var(--color-bg)",
-              textAlign: "center",
-              overflowY: "auto",
-            }}
-          >
-            <div
-              style={{
-                maxWidth: "600px",
-                padding: "var(--spacing-xl)",
-                backgroundColor: "var(--color-surface-lowest)",
-                borderRadius: "var(--radius-xl)",
-                border: "1px solid var(--color-surface)",
-                boxShadow: "var(--shadow-lg)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "var(--spacing-lg)",
-                transition: "all 0.3s ease",
-              }}
-            >
-              {/* Animated/Glowing Icon */}
-              <div
-                style={{
-                  width: "72px",
-                  height: "72px",
-                  borderRadius: "50%",
-                  backgroundColor: "rgba(53, 37, 205, 0.08)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "var(--color-primary)",
-                  boxShadow: "var(--shadow-glow)",
-                  marginBottom: "var(--spacing-sm)",
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: "36px" }}>
-                  forum
-                </span>
+          <div className="portal-welcome-container">
+            <div className="portal-welcome-card">
+              <div className="portal-welcome-icon">
+                <span className="material-symbols-outlined">forum</span>
               </div>
 
-              {/* Title & Subtitle */}
               <div>
-                <h3
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: "800",
-                    background: "linear-gradient(135deg, var(--color-primary), #4f46e5)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    marginBottom: "var(--spacing-sm)",
-                  }}
-                >
+                <h3 className="portal-welcome-title">
                   Hello, {currentUser?.name || "Valued Customer"}!
                 </h3>
-                <p
-                  style={{
-                    fontSize: "14px",
-                    color: "var(--color-text-secondary)",
-                    lineHeight: "1.6",
-                  }}
-                >
+                <p className="portal-welcome-subtitle">
                   Welcome to the Customer Support Portal. Your conversations are powered by secure cookie sessions and adaptive AI memory.
                 </p>
               </div>
 
-              {/* Action Information Cards */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "var(--spacing-md)",
-                  width: "100%",
-                  margin: "8px 0",
-                }}
-              >
-                <div
-                  style={{
-                    padding: "var(--spacing-md)",
-                    backgroundColor: "var(--color-surface-low)",
-                    borderRadius: "var(--radius-md)",
-                    textAlign: "left",
-                    border: "1px solid rgba(0, 0, 0, 0.02)",
-                  }}
-                >
-                  <h4 style={{ fontSize: "13px", fontWeight: "700", display: "flex", alignItems: "center", gap: "6px", color: "var(--color-text-primary)", marginBottom: "4px" }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: "16px", color: "var(--color-primary)" }}>
-                      quickreply
-                    </span>
+              <div className="portal-welcome-grid">
+                <div className="portal-welcome-feature">
+                  <h4 className="portal-welcome-feature-title">
+                    <span className="material-symbols-outlined">quickreply</span>
                     Chat History
                   </h4>
-                  <p style={{ fontSize: "11px", color: "var(--color-text-muted)", lineHeight: "1.4" }}>
+                  <p>
                     Select any of your previous support tickets from the left panel to resume your chat session.
                   </p>
                 </div>
-                <div
-                  style={{
-                    padding: "var(--spacing-md)",
-                    backgroundColor: "var(--color-surface-low)",
-                    borderRadius: "var(--radius-md)",
-                    textAlign: "left",
-                    border: "1px solid rgba(0, 0, 0, 0.02)",
-                  }}
-                >
-                  <h4 style={{ fontSize: "13px", fontWeight: "700", display: "flex", alignItems: "center", gap: "6px", color: "var(--color-text-primary)", marginBottom: "4px" }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: "16px", color: "var(--color-primary)" }}>
-                      rate_review
-                    </span>
+                <div className="portal-welcome-feature">
+                  <h4 className="portal-welcome-feature-title">
+                    <span className="material-symbols-outlined">rate_review</span>
                     New Ticket
                   </h4>
-                  <p style={{ fontSize: "11px", color: "var(--color-text-muted)", lineHeight: "1.4" }}>
+                  <p>
                     Need fresh assistance? Click "File a Complaint" below to instantly spawn an AI-assisted ticket.
                   </p>
                 </div>
               </div>
 
-              {/* Main Call to Action */}
               <button
                 className="btn-primary"
                 onClick={() => setShowNewTicketModal(true)}
-                style={{
-                  padding: "12px 24px",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  gap: "8px",
-                  boxShadow: "0 4px 12px rgba(53, 37, 205, 0.2)",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.filter = "brightness(1.1)")}
-                onMouseLeave={(e) => (e.currentTarget.style.filter = "none")}
               >
                 <span className="material-symbols-outlined">add_circle</span>
                 File a Complaint
@@ -298,17 +200,17 @@ function App() {
       case "tickets-log":
         return (
           <div className="scrollable-body animate-fade-in">
-            <h3 style={{ fontSize: "22px", fontWeight: "800", marginBottom: "var(--spacing-lg)" }}>
+            <h3 className="tickets-log-title">
               Tickets Log Directory
             </h3>
             
-            <div className="bento-card" style={{ padding: 0, overflow: "hidden" }}>
+            <div className="table-container">
               {loadingTickets ? (
-                <div style={{ padding: "40px", textAlign: "center", color: "var(--color-text-muted)" }}>
+                <div className="table-loading">
                   Loading logs...
                 </div>
               ) : tickets.length === 0 ? (
-                <div style={{ padding: "40px", textAlign: "center", color: "var(--color-text-muted)" }}>
+                <div className="table-empty">
                   No tickets found.
                 </div>
               ) : (
@@ -325,9 +227,9 @@ function App() {
                   <tbody>
                     {tickets.map((ticket) => (
                       <tr key={ticket.id} onClick={() => handleTicketSelect(ticket.id)}>
-                        <td style={{ fontWeight: "600" }}>{ticket.subject}</td>
+                        <td className="ticket-detail-subject">{ticket.subject}</td>
                         <td>{ticket.customer_name}</td>
-                        <td style={{ textTransform: "uppercase", fontSize: "12px" }}>{ticket.priority}</td>
+                        <td className={`priority-${ticket.priority}`}>{ticket.priority}</td>
                         <td>
                           <span className={`badge ${ticket.status === 'resolved' ? 'badge-resolved' : 'badge-open'}`}>
                             {ticket.status}
@@ -351,8 +253,9 @@ function App() {
   // 1. Render Loading State (For checking cookie session on Customer mode)
   if (loadingSession) {
     return (
-      <div style={{ display: "flex", height: "100vh", alignItems: "center", justifyContent: "center", backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}>
-        Verifying support portal session...
+      <div className="loading-screen">
+        <div className="loading-spinner" />
+        <span>Verifying support portal session...</span>
       </div>
     );
   }
@@ -360,23 +263,13 @@ function App() {
   // 2. Render Login gateway if Customer is not signed in
   if (!isAdmin && !currentUser) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-        <header
-          style={{
-            height: "var(--header-height)",
-            backgroundColor: "var(--color-surface-lowest)",
-            borderBottom: "1px solid var(--color-surface)",
-            padding: "0 var(--spacing-lg)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <h2 style={{ fontSize: "15px", fontWeight: "700", color: "var(--color-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
-            <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>support_agent</span>
+      <div className="app-container" style={{ flexDirection: "column" }}>
+        <header className="login-page-header">
+          <h2 className="login-page-title">
+            <span className="material-symbols-outlined">support_agent</span>
             Customer Support Portal
           </h2>
-          <div style={{ display: "flex", gap: "var(--spacing-sm)", fontSize: "11px", fontWeight: "600", color: "var(--color-text-muted)" }}>
+          <div className="login-page-status">
             Server connection secure
           </div>
         </header>

@@ -106,116 +106,94 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
 
   if (loading) {
     return (
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyItems: "center", justifyContent: "center", color: "var(--color-text-muted)" }}>
-        Loading chat history...
+      <div className="loading-screen">
+        <div className="loading-spinner" />
+        <span>Loading chat history...</span>
       </div>
     );
   }
 
   if (!ticket) {
     return (
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyItems: "center", justifyContent: "center", color: "var(--color-error)" }}>
-        Error: Ticket not found.
+      <div className="loading-screen" style={{ color: 'var(--color-error)' }}>
+        <span className="material-symbols-outlined" style={{ fontSize: '40px' }}>error_outline</span>
+        <span>Ticket not found.</span>
       </div>
     );
   }
 
-  // Generate mock memory logs based on ticket subject
+  // Generate memory insights
   const getMemoryInsights = () => {
     const s = ticket.subject.toLowerCase();
     if (s.includes("rate") || s.includes("limit")) {
       return {
         match: "92% Hindsight Confidence",
-        summary: "Matched 2 past resolved issues. Incident ID #TK-1148 (Acme API Rate Limits) resolved on 2026-05-12. Solution: Instruct user to implement Exponential Backoff and rate limit request headers validation."
+        summary: "Matched 2 past resolved issues. Solution: Implement Exponential Backoff and validate rate limit request headers."
       };
     }
     if (s.includes("sso") || s.includes("login") || s.includes("auth")) {
       return {
         match: "88% Hindsight Confidence",
-        summary: "Matched 1 past resolved issue. Incident ID #TK-0941 (Okta Loop Loop) resolved on 2026-04-30. Solution: Verify return redirect URIs match exactly between vendor dashboard and configuration settings."
+        summary: "Matched 1 past issue. Solution: Verify return redirect URIs match between vendor dashboard and config."
       };
     }
     return {
-      match: "New Context Detected (0 matches)",
-      summary: "This issue does not match any previously resolved resolutions in Hindsight memory. The AI agent is responding based on general platform documentation. (Solution will be indexed into memory upon ticket resolution)."
+      match: "New Context (0 matches)",
+      summary: "No prior matches found. AI responding from platform docs. Solution indexed on resolution."
     };
   };
 
   const insights = getMemoryInsights();
 
   return (
-    <div className="chat-pane-layout animate-fade-in">
-      {/* Left Pane - Ticket Info & Resolution Form (Agent only) */}
+    <div className="chat-pane-layout">
+      {/* Left Pane - Ticket Info (Agent only) */}
       {viewMode === 'agent' && (
         <div className="chat-side-panel">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--spacing-md)" }}>
-            <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--color-text-muted)" }}>
-              TICKET METADATA
-            </span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
+            <span className="chat-side-label">Ticket Metadata</span>
             <span className={`badge ${ticket.status === 'resolved' ? 'badge-resolved' : 'badge-open'}`}>
               {ticket.status.replace('_', ' ')}
             </span>
           </div>
 
-          <h3 style={{ fontSize: "16px", fontWeight: "800", marginBottom: "var(--spacing-sm)", color: "var(--color-text-primary)" }}>
-            {ticket.subject}
-          </h3>
+          <h3 className="chat-side-subject">{ticket.subject}</h3>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "12px", color: "var(--color-text-secondary)", marginBottom: "var(--spacing-md)" }}>
+          <div className="chat-side-detail">
             <div><strong>Customer:</strong> {ticket.customer_name} ({ticket.customer_email})</div>
-            <div><strong>Priority:</strong> <span style={{ textTransform: "capitalize" }}>{ticket.priority}</span></div>
+            <div><strong>Priority:</strong> <span style={{ textTransform: 'capitalize' }}>{ticket.priority}</span></div>
             <div><strong>Opened:</strong> {new Date(ticket.created_at).toLocaleString()}</div>
           </div>
 
-          <div style={{ borderTop: "1px solid var(--color-surface)", paddingTop: "var(--spacing-md)", marginBottom: "var(--spacing-md)" }}>
-            <span className="form-label" style={{ fontSize: "10px" }}>Initial Complaint</span>
-            <p style={{ fontSize: "13px", color: "var(--color-text-secondary)", whiteSpace: "pre-wrap" }}>
-              {ticket.description}
-            </p>
+          <div className="chat-side-divider">
+            <span className="form-label" style={{ fontSize: '10px' }}>Initial Complaint</span>
+            <p className="chat-side-description">{ticket.description}</p>
           </div>
 
-          {/* Resolution Options */}
-          <div style={{ marginTop: "auto", borderTop: "1px solid var(--color-surface)", paddingTop: "var(--spacing-md)" }}>
+          {/* Resolution */}
+          <div style={{ marginTop: 'auto', borderTop: '1px solid var(--color-surface)', paddingTop: 'var(--spacing-md)' }}>
             {ticket.status !== 'resolved' && ticket.status !== 'closed' ? (
               !resolving ? (
-                <button
-                  onClick={() => setResolving(true)}
-                  className="btn-primary"
-                  style={{ width: "100%", justifyContent: "center" }}
-                >
+                <button onClick={() => setResolving(true)} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
                   <span className="material-symbols-outlined">check_circle</span>
                   Mark as Resolved
                 </button>
               ) : (
-                <form onSubmit={handleResolveSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-sm)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span className="form-label" style={{ margin: 0 }}>Resolution Rating</span>
-                    <div style={{ display: "flex", gap: "var(--spacing-xs)" }}>
+                <form onSubmit={handleResolveSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="form-label" style={{ margin: 0 }}>Rating</span>
+                    <div className="rating-btn-group">
                       <button
                         type="button"
                         onClick={() => setRating('positive')}
-                        style={{
-                          background: rating === 'positive' ? "rgba(16, 185, 129, 0.15)" : "none",
-                          border: "1px solid var(--color-surface-high)",
-                          color: rating === 'positive' ? "var(--color-tertiary-light)" : "var(--color-text-muted)",
-                          padding: "4px 8px",
-                          borderRadius: "var(--radius-sm)",
-                          cursor: "pointer",
-                        }}
+                        className={`rating-btn positive ${rating === 'positive' ? 'selected' : ''}`}
                       >
                         👍
                       </button>
                       <button
                         type="button"
                         onClick={() => setRating('negative')}
-                        style={{
-                          background: rating === 'negative' ? "rgba(186, 26, 26, 0.15)" : "none",
-                          border: "1px solid var(--color-surface-high)",
-                          color: rating === 'negative' ? "var(--color-error)" : "var(--color-text-muted)",
-                          padding: "4px 8px",
-                          borderRadius: "var(--radius-sm)",
-                          cursor: "pointer",
-                        }}
+                        className={`rating-btn negative ${rating === 'negative' ? 'selected' : ''}`}
                       >
                         👎
                       </button>
@@ -223,7 +201,7 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
                   </div>
 
                   <div className="form-group" style={{ margin: 0 }}>
-                    <span className="form-label">Feedback Comments</span>
+                    <span className="form-label">Feedback</span>
                     <textarea
                       className="form-textarea"
                       placeholder="Describe how the issue was resolved..."
@@ -231,42 +209,27 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
                       onChange={(e) => setComment(e.target.value)}
                       rows={2}
                       required
-                      style={{ resize: "none", fontSize: "12px" }}
+                      style={{ resize: 'none', fontSize: '12px' }}
                     />
                   </div>
 
-                  <div style={{ display: "flex", gap: "var(--spacing-xs)" }}>
-                    <button type="submit" className="btn-primary" style={{ flex: 1, padding: "8px", fontSize: "12px", justifyContent: "center" }}>
+                  <div style={{ display: 'flex', gap: 'var(--spacing-xs)' }}>
+                    <button type="submit" className="btn-primary" style={{ flex: 1, padding: '8px', fontSize: '12px', justifyContent: 'center' }}>
                       Submit
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setResolving(false)}
-                      className="btn-secondary"
-                      style={{ padding: "8px", fontSize: "12px" }}
-                    >
+                    <button type="button" onClick={() => setResolving(false)} className="btn-secondary" style={{ padding: '8px', fontSize: '12px' }}>
                       Cancel
                     </button>
                   </div>
                 </form>
               )
             ) : (
-              <div
-                style={{
-                  backgroundColor: "rgba(16, 185, 129, 0.05)",
-                  border: "1px solid var(--color-tertiary-light)",
-                  borderRadius: "var(--radius-md)",
-                  padding: "var(--spacing-md)",
-                  textAlign: "center",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", color: "var(--color-tertiary)", fontWeight: "700", fontSize: "13px" }}>
+              <div className="chat-side-resolved">
+                <div className="chat-side-resolved-title">
                   <span className="material-symbols-outlined">check_circle</span>
                   Issue Solved
                 </div>
-                <p style={{ fontSize: "11px", color: "var(--color-text-muted)", marginTop: "4px" }}>
-                  Indexed into Hindsight resolution memory bank for future incidents.
-                </p>
+                <p>Indexed into memory bank for future incidents.</p>
               </div>
             )}
           </div>
@@ -275,73 +238,48 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
 
       {/* Right Pane - Chat Window */}
       <div className="chat-main-panel">
-        {/* Chat Pane Header */}
-        <div
-          style={{
-            padding: "var(--spacing-md) var(--spacing-lg)",
-            backgroundColor: "var(--color-surface-lowest)",
-            borderBottom: "1px solid var(--color-surface)",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexShrink: 0,
-          }}
-        >
+        {/* Chat Header */}
+        <div className="chat-pane-header">
           <div>
-            <h3 style={{ fontSize: "16px", fontWeight: "800", color: "var(--color-text-primary)", display: "flex", alignItems: "center", gap: "8px" }}>
+            <h3 className="chat-pane-subject">
               {ticket.subject}
               <span className={`badge ${ticket.status === 'resolved' ? 'badge-resolved' : 'badge-open'}`}>
                 {ticket.status.replace('_', ' ')}
               </span>
             </h3>
-            <div style={{ fontSize: "11px", color: "var(--color-text-muted)", marginTop: "2px" }}>
-              Priority: <strong style={{ textTransform: "uppercase" }}>{ticket.priority}</strong> &bull; Opened: {new Date(ticket.created_at).toLocaleString()}
+            <div className="chat-pane-meta">
+              Priority: <strong style={{ textTransform: 'uppercase' }}>{ticket.priority}</strong> &bull; Opened: {new Date(ticket.created_at).toLocaleString()}
             </div>
           </div>
 
-          {/* Action: Mark as Resolved (only for customer view when ticket is open) */}
+          {/* Customer resolve action */}
           {viewMode === 'customer' && ticket.status !== 'resolved' && ticket.status !== 'closed' && !resolving && (
-            <button
-              onClick={() => setResolving(true)}
-              className="btn-primary"
-              style={{ padding: "8px 14px", fontSize: "12px", gap: "6px" }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>check_circle</span>
+            <button onClick={() => setResolving(true)} className="btn-primary" style={{ padding: '8px 14px', fontSize: '12px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>check_circle</span>
               Mark as Resolved
             </button>
           )}
         </div>
 
-        {/* Messages list */}
+        {/* Messages */}
         <div className="chat-history-container">
-          
-          {/* Welcome/System prompt banner */}
-          <div
-            style={{
-              padding: "var(--spacing-md)",
-              backgroundColor: "var(--color-surface-lowest)",
-              border: "1px solid var(--color-surface)",
-              borderRadius: "var(--radius-md)",
-              fontSize: "12px",
-              color: "var(--color-text-secondary)",
-              boxShadow: "var(--shadow-sm)",
-            }}
-          >
-            <strong>System:</strong> Support chat initialized for Customer: <strong>{ticket.customer_name}</strong>. Responses are automatically drafted by the Support AI.
+          {/* System banner */}
+          <div className="chat-system-banner">
+            <strong>System:</strong> Support chat initialized for <strong>{ticket.customer_name}</strong>. Responses are drafted by the AI agent.
           </div>
 
           {messages.map((msg, index) => {
             const isAgent = msg.role === 'agent';
             return (
               <div key={msg.id || index}>
-                {/* If Agent and in Agent view, display Memory Recall insight box directly above their message */}
+                {/* Memory insight above agent messages (Agent view only) */}
                 {isAgent && viewMode === 'agent' && (
-                  <div className="ai-memory-card" style={{ maxWidth: "70%", marginLeft: "auto" }}>
+                  <div className="ai-memory-card" style={{ maxWidth: '68%', marginLeft: 'auto', marginBottom: '4px' }}>
                     <div className="ai-memory-header">
-                      <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>lightbulb</span>
+                      <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>lightbulb</span>
                       {insights.match}
                     </div>
-                    <div style={{ fontSize: "11px", lineHeight: "1.4" }}>
+                    <div style={{ fontSize: '11px', lineHeight: '1.5' }}>
                       {insights.summary}
                     </div>
                   </div>
@@ -367,64 +305,28 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
             </div>
           )}
 
-          {/* Inline Feedback Form inside Chat Area (when resolving is true and viewMode is customer) */}
+          {/* Inline Feedback (Customer resolve) */}
           {resolving && viewMode === 'customer' && (
-            <div
-              style={{
-                alignSelf: "center",
-                backgroundColor: "var(--color-surface-lowest)",
-                border: "1px solid var(--color-primary-fixed-dim)",
-                borderRadius: "var(--radius-lg)",
-                padding: "var(--spacing-lg)",
-                margin: "var(--spacing-md) 0",
-                boxShadow: "var(--shadow-lg)",
-                maxWidth: "600px",
-                width: "100%",
-                textAlign: "left",
-                animation: "scale-up 0.2s ease-out",
-              }}
-            >
-              <h4 style={{ fontSize: "14px", fontWeight: "700", display: "flex", alignItems: "center", gap: "6px", color: "var(--color-text-primary)", marginBottom: "var(--spacing-sm)" }}>
-                <span className="material-symbols-outlined" style={{ color: "var(--color-primary)" }}>
-                  rate_review
-                </span>
+            <div className="chat-inline-card">
+              <h4 className="chat-inline-card-title">
+                <span className="material-symbols-outlined">rate_review</span>
                 Resolve Ticket & Provide Feedback
               </h4>
-              <form onSubmit={handleResolveSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-md)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "12px", color: "var(--color-text-secondary)" }}>How was the AI's assistance?</span>
-                  <div style={{ display: "flex", gap: "var(--spacing-xs)" }}>
+              <form onSubmit={handleResolveSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>How was the AI's assistance?</span>
+                  <div className="rating-btn-group">
                     <button
                       type="button"
                       onClick={() => setRating('positive')}
-                      style={{
-                        background: rating === 'positive' ? "rgba(16, 185, 129, 0.15)" : "none",
-                        border: "1px solid var(--color-surface-high)",
-                        color: rating === 'positive' ? "var(--color-tertiary-light)" : "var(--color-text-muted)",
-                        padding: "6px 12px",
-                        borderRadius: "var(--radius-md)",
-                        cursor: "pointer",
-                        fontSize: "13px",
-                        fontWeight: "600",
-                        transition: "all 0.2s",
-                      }}
+                      className={`rating-btn positive ${rating === 'positive' ? 'selected' : ''}`}
                     >
                       👍 Positive
                     </button>
                     <button
                       type="button"
                       onClick={() => setRating('negative')}
-                      style={{
-                        background: rating === 'negative' ? "rgba(186, 26, 26, 0.15)" : "none",
-                        border: "1px solid var(--color-surface-high)",
-                        color: rating === 'negative' ? "var(--color-error)" : "var(--color-text-muted)",
-                        padding: "6px 12px",
-                        borderRadius: "var(--radius-md)",
-                        cursor: "pointer",
-                        fontSize: "13px",
-                        fontWeight: "600",
-                        transition: "all 0.2s",
-                      }}
+                      className={`rating-btn negative ${rating === 'negative' ? 'selected' : ''}`}
                     >
                       👎 Negative
                     </button>
@@ -432,7 +334,7 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
                 </div>
 
                 <div className="form-group" style={{ margin: 0 }}>
-                  <span className="form-label" style={{ fontSize: "11px" }}>Feedback Details</span>
+                  <span className="form-label" style={{ fontSize: '11px' }}>Feedback Details</span>
                   <textarea
                     className="form-textarea"
                     placeholder="Tell us what resolved the issue or how we can improve..."
@@ -440,24 +342,15 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
                     onChange={(e) => setComment(e.target.value)}
                     rows={3}
                     required
-                    style={{ resize: "none", fontSize: "13px" }}
+                    style={{ resize: 'none', fontSize: '13px' }}
                   />
                 </div>
 
-                <div style={{ display: "flex", gap: "var(--spacing-sm)", justifyContent: "flex-end" }}>
-                  <button
-                    type="button"
-                    onClick={() => setResolving(false)}
-                    className="btn-secondary"
-                    style={{ padding: "8px 16px", fontSize: "13px" }}
-                  >
+                <div style={{ display: 'flex', gap: 'var(--spacing-sm)', justifyContent: 'flex-end' }}>
+                  <button type="button" onClick={() => setResolving(false)} className="btn-secondary" style={{ padding: '8px 16px', fontSize: '13px' }}>
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    className="btn-primary"
-                    style={{ padding: "8px 16px", fontSize: "13px", justifyContent: "center" }}
-                  >
+                  <button type="submit" className="btn-primary" style={{ padding: '8px 16px', fontSize: '13px' }}>
                     Resolve Ticket
                   </button>
                 </div>
@@ -465,66 +358,38 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
             </div>
           )}
 
-          {/* Inline Issue Solved Banner inside Chat Area (when ticket is resolved and viewMode is customer) */}
+          {/* Resolved Banner (Customer view) */}
           {ticket.status === 'resolved' && viewMode === 'customer' && (
-            <div
-              style={{
-                alignSelf: "center",
-                backgroundColor: "rgba(16, 185, 129, 0.05)",
-                border: "1px solid var(--color-tertiary-light)",
-                borderRadius: "var(--radius-lg)",
-                padding: "var(--spacing-md)",
-                textAlign: "center",
-                maxWidth: "600px",
-                width: "100%",
-                margin: "var(--spacing-md) 0",
-                boxShadow: "var(--shadow-sm)",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", color: "var(--color-tertiary)", fontWeight: "700", fontSize: "14px" }}>
+            <div className="chat-resolved-banner">
+              <div className="chat-resolved-banner-title">
                 <span className="material-symbols-outlined">check_circle</span>
                 Issue Solved & Archived
               </div>
-              <p style={{ fontSize: "12px", color: "var(--color-text-muted)", marginTop: "4px" }}>
-                This conversation has been resolved. The context and facts have been securely indexed into your AI support memory profile.
-              </p>
+              <p>This conversation has been resolved. Context has been securely indexed into your AI support profile.</p>
             </div>
           )}
           
           <div ref={historyEndRef} />
         </div>
 
-        {/* Message Input Form */}
+        {/* Message Input */}
         {ticket.status !== 'resolved' && ticket.status !== 'closed' ? (
           <form onSubmit={handleSend} className="chat-input-bar">
             <input
               type="text"
               className="chat-input-field"
-              placeholder="Ask a customer support question..."
+              placeholder="Type your message..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               disabled={sending}
             />
-            <button
-              type="submit"
-              className="chat-send-btn"
-              disabled={!inputText.trim() || sending}
-            >
+            <button type="submit" className="chat-send-btn" disabled={!inputText.trim() || sending}>
               <span className="material-symbols-outlined">send</span>
             </button>
           </form>
         ) : (
-          <div
-            style={{
-              padding: "var(--spacing-md)",
-              textAlign: "center",
-              backgroundColor: "var(--color-surface-low)",
-              color: "var(--color-text-muted)",
-              fontSize: "13px",
-              borderTop: "1px solid var(--color-surface)",
-            }}
-          >
-            Chat session locked because the ticket is resolved.
+          <div className="chat-locked-bar">
+            Chat session locked — ticket has been resolved.
           </div>
         )}
       </div>

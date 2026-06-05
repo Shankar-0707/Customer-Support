@@ -35,60 +35,28 @@ export default function CustomerLogin({ onIdentifySuccess }: CustomerLoginProps)
   };
 
   return (
-    <div
-      style={{
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "var(--color-bg)",
-        minHeight: "calc(100vh - var(--header-height))",
-        padding: "var(--spacing-lg)",
-      }}
-    >
-      <div
-        className="bento-card"
-        style={{
-          width: "400px",
-          maxWidth: "100%",
-          padding: "var(--spacing-xl) var(--spacing-lg)",
-          boxShadow: "var(--shadow-lg)",
-          border: "1px solid var(--color-surface)",
-          animation: "scale-up 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
-        }}
-      >
-        <div style={{ textAlign: "center", marginBottom: "var(--spacing-lg)" }}>
-          <span className="material-symbols-outlined" style={{ fontSize: "48px", color: "var(--color-primary)", marginBottom: "var(--spacing-sm)" }}>
-            support_agent
-          </span>
-          <h3 style={{ fontSize: "20px", fontWeight: "800", color: "var(--color-text-primary)", marginBottom: "4px" }}>
-            Customer Support Panel
-          </h3>
-          <p style={{ fontSize: "13px", color: "var(--color-text-secondary)" }}>
+    <div className="login-container">
+      <div className="login-card">
+        <div className="login-header">
+          <div className="login-icon-wrapper">
+            <span className="material-symbols-outlined">support_agent</span>
+          </div>
+          <h3 className="login-title">Customer Support Panel</h3>
+          <p className="login-subtitle">
             Enter your email to view your tickets and chat with our support AI.
           </p>
         </div>
 
         {error && (
-          <div
-            style={{
-              padding: "10px",
-              backgroundColor: "var(--color-error-container)",
-              color: "var(--color-error)",
-              borderRadius: "var(--radius-md)",
-              fontSize: "12px",
-              marginBottom: "var(--spacing-md)",
-              textAlign: "center",
-            }}
-          >
+          <div className="modal-error">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-md)" }}>
+        <form onSubmit={handleSubmit} className="login-form">
           {/* Email */}
-          <div className="form-group" style={{ margin: 0 }}>
-            <label className="form-label" style={{ fontSize: "11px" }}>Email Address</label>
+          <div className="form-group">
+            <label className="form-label">Email Address</label>
             <input
               type="email"
               className="form-input"
@@ -97,14 +65,13 @@ export default function CustomerLogin({ onIdentifySuccess }: CustomerLoginProps)
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={loading}
-              style={{ fontSize: "14px" }}
             />
           </div>
 
           {/* Optional Name (For new registrations) */}
-          <div className="form-group" style={{ margin: 0 }}>
-            <label className="form-label" style={{ fontSize: "11px" }}>
-              Full Name <span style={{ textTransform: "none", color: "var(--color-text-muted)", fontWeight: "normal" }}>(Optional - for new accounts)</span>
+          <div className="form-group">
+            <label className="form-label">
+              Full Name <span style={{ textTransform: "none", color: "var(--color-text-muted)", fontWeight: "normal" }}>(Optional)</span>
             </label>
             <input
               type="text"
@@ -113,29 +80,20 @@ export default function CustomerLogin({ onIdentifySuccess }: CustomerLoginProps)
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={loading}
-              style={{ fontSize: "14px" }}
             />
           </div>
 
           <button
             type="submit"
-            className="btn-primary"
+            className="btn-primary login-submit-btn"
             disabled={loading || !email.trim()}
-            style={{
-              marginTop: "var(--spacing-sm)",
-              justifyContent: "center",
-              width: "100%",
-              padding: "12px",
-              fontSize: "14px",
-              fontWeight: "600",
-            }}
           >
             {loading ? "Verifying..." : "Access Support Panel"}
           </button>
         </form>
 
-        <div style={{ marginTop: "var(--spacing-lg)", borderTop: "1px solid var(--color-surface)", paddingTop: "var(--spacing-md)", textAlign: "center" }}>
-          <p style={{ fontSize: "11px", color: "var(--color-text-muted)" }}>
+        <div className="login-tips">
+          <p>
             Tip: You can use seeded accounts like <strong>alice@example.com</strong>, <strong>bob@example.com</strong>, or <strong>carol@example.com</strong> to test existing data.
           </p>
         </div>

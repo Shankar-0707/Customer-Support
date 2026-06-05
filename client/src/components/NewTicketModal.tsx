@@ -65,36 +65,20 @@ export default function NewTicketModal({ onClose, onSuccess, preselectedUserId }
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--spacing-lg)" }}>
-          <h3 style={{ fontSize: "16px", fontWeight: "800", color: "var(--color-text-primary)" }}>
+        <div className="modal-header">
+          <h3 className="modal-title">
             File Support Ticket
           </h3>
           <button
             onClick={onClose}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: "var(--color-text-muted)",
-              display: "flex",
-              alignItems: "center",
-            }}
+            className="modal-close-btn"
           >
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
 
         {error && (
-          <div
-            style={{
-              padding: "10px",
-              backgroundColor: "var(--color-error-container)",
-              color: "var(--color-error)",
-              borderRadius: "var(--radius-md)",
-              fontSize: "12px",
-              marginBottom: "var(--spacing-md)",
-            }}
-          >
+          <div className="modal-error">
             {error}
           </div>
         )}
@@ -153,7 +137,7 @@ export default function NewTicketModal({ onClose, onSuccess, preselectedUserId }
           </div>
 
           {/* Description */}
-          <div className="form-group" style={{ marginBottom: "var(--spacing-lg)" }}>
+          <div className="form-group">
             <label className="form-label">Complaint / Problem Description</label>
             <textarea
               className="form-textarea"
@@ -167,7 +151,7 @@ export default function NewTicketModal({ onClose, onSuccess, preselectedUserId }
           </div>
 
           {/* Form Actions */}
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--spacing-sm)" }}>
+          <div className="modal-actions">
             <button
               type="button"
               className="btn-secondary"
