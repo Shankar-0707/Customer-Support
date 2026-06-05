@@ -2236,8 +2236,8 @@ body {
 :root[data-theme="light"] .chat-history-container,
 [data-theme="light"] .chat-history-container {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 180px);
-  gap: 14px;
-  padding: 22px 24px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
 }
 
 :root[data-theme="light"] .chat-system-banner,
@@ -2282,7 +2282,7 @@ body {
 [data-theme="light"] .chat-input-bar {
   background: rgba(255, 255, 255, 0.94);
   border-top-color: #dbe4f0;
-  padding: 16px 24px;
+  padding: var(--spacing-sm) var(--spacing-md);
 }
 
 :root[data-theme="light"] .chat-input-field,
@@ -2319,9 +2319,9 @@ body {
 [data-theme="light"] .chat-send-btn,
 :root[data-theme="light"] .rating-btn.selected,
 [data-theme="light"] .rating-btn.selected {
-  background: #111827;
-  color: #ffffff;
-  border-color: #111827;
+  background: var(--color-surface-high);
+  color: var(--color-text-muted);
+  border-color: var(--color-surface-high);
 }
 
 :root[data-theme="light"] .btn-primary:hover,
@@ -2334,9 +2334,9 @@ body {
 [data-theme="light"] .chat-send-btn:hover,
 :root[data-theme="light"] .rating-btn.selected:hover,
 [data-theme="light"] .rating-btn.selected:hover {
-  background: #000000;
-  color: #ffffff;
-  border-color: #000000;
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
 }
 
 :root[data-theme="light"] .btn-secondary,
