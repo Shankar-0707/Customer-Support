@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import * as chatService from "../services/chat.service.js";
-import { generateAgentResponse, generateTicketSummary } from "../services/llm.service.js";
+import { generateAgentResponse, generateTicketSummary, generateUserContextFacts } from "../services/llm.service.js";
 import { updateTicketStatus, getTicketById } from "../services/ticket.service.js";
 import * as hindsightService from "../services/hindsight.service.js";
 
@@ -49,17 +49,25 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
     const session = await chatService.getChatSessionById(sessionId);
     if (session) {
       const userId = session.user_id;
+      const memoryRecallQuery = [
+        `Current customer message: ${content}`,
+        "Recent conversation:",
+        formattedHistory
+          .slice(-8)
+          .map((m) => `${m.role === "user" ? "Customer" : "Agent"}: ${m.content}`)
+          .join("\n"),
+      ].join("\n");
 
       try {
         // Query specific customer memory
-        customerMemories = await hindsightService.recallMemory(userId, content);
+        customerMemories = await hindsightService.recallMemory(userId, memoryRecallQuery);
       } catch (err) {
         console.error("Failed to retrieve customer memory context:", err);
       }
 
       try {
         // Query global resolution memory (cross-customer learning)
-        sharedResolutions = await hindsightService.recallMemory("global_resolutions", content);
+        sharedResolutions = await hindsightService.recallMemory("global_resolutions", memoryRecallQuery);
       } catch (err) {
         console.error("Failed to retrieve shared resolution context:", err);
       }
@@ -74,6 +82,14 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
 
     // 5. Save AI agent response to DB
     const agentMessage = await chatService.addMessage(sessionId, 'agent', agentReplyContent);
+
+    if (session) {
+      try {
+        await hindsightService.retainConversationMemory(session.user_id, content, agentReplyContent);
+      } catch (err) {
+        console.error("Failed to retain conversation memory:", err);
+      }
+    }
 
     res.status(201).json({
       success: true,
@@ -112,7 +128,7 @@ export async function resolveAndFeedback(req: Request, res: Response, next: Next
       if (ticket) {
         const session = await chatService.getChatSessionByTicketId(ticketId);
         let chatHistoryText = "";
-        
+
         if (session) {
           const messages = await chatService.getMessagesBySession(session.id);
           chatHistoryText = messages
@@ -120,6 +136,38 @@ export async function resolveAndFeedback(req: Request, res: Response, next: Next
             .join("\n");
         }
 
+        // --- INDIVIDUAL BANK: Extract personal user-specific facts (not anonymized) ---
+        const userFacts = await generateUserContextFacts(ticket.subject, chatHistoryText);
+        const rawFacts = userFacts ? userFacts.trim() : "";
+
+        // Robustly filter out negative/absent-fact bullets that the LLM may generate
+        // e.g. "- Customer's name is not mentioned" → discard
+        const NEGATIVE_PHRASES = ["not mentioned", "not provided", "not stated", "did not", "does not", "no mention", "unknown", "n/a"];
+        const validBullets = rawFacts
+          .split("\n")
+          .map((line) => line.trim())
+          .filter((line) => line.startsWith("- "))
+          .filter((line) => {
+            const lower = line.toLowerCase();
+            return !NEGATIVE_PHRASES.some((phrase) => lower.includes(phrase));
+          });
+
+        // Treat as NONE if: original was NONE, empty, or all bullets were negative
+        const userFactsIsNone =
+          rawFacts === "" ||
+          rawFacts.toUpperCase() === "NONE" ||
+          rawFacts.toUpperCase().includes("NONE") ||
+          validBullets.length === 0;
+
+        if (!userFactsIsNone) {
+          const factsToStore = validBullets.join("\n");
+          console.log(`👤 Storing user context facts for ${ticket.user_id}:\n${factsToStore}`);
+          await hindsightService.retainMemory(ticket.user_id, factsToStore);
+        } else {
+          console.log(`ℹ️ No personal facts found for ticket "${ticket.subject}" — skipping individual bank write.`);
+        }
+
+        // --- GLOBAL BANK: Anonymized technical resolution only ---
         const summary = await generateTicketSummary(
           ticket.subject,
           ticket.description,
@@ -132,15 +180,8 @@ export async function resolveAndFeedback(req: Request, res: Response, next: Next
         const isNone = cleanSummary.toUpperCase() === "NONE" || cleanSummary === "";
 
         if (!isNone) {
-          // Retain the technical summary in customer bank (Phase 3)
-          await hindsightService.retainMemory(ticket.user_id, cleanSummary);
-
-          // Retain the technical summary in global resolutions bank (Phase 4)
+          // Only anonymized technical resolutions go into the global bank
           await hindsightService.retainMemory("global_resolutions", cleanSummary);
-        } else {
-          // If the summary is NONE, it means it's a personal/chitchat ticket.
-          // Retain ONLY in the specific customer's bank as general history context (Phase 3)
-          await hindsightService.retainMemory(ticket.user_id, `Resolved ticket "${ticket.subject}"`);
         }
       }
     } catch (memoryError) {

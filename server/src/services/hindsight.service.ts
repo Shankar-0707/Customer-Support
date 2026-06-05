@@ -65,40 +65,7 @@ export async function retainMemory(bankId: string, content: string): Promise<voi
  */
 export async function recallMemory(bankId: string, queryText: string): Promise<string> {
   if (isMockMode || !hindsightClient) {
-    // Parse query into alphanumeric keywords of length > 3
-    const words = queryText
-      .replace(/[^\w\s]/g, "")
-      .split(/\s+/)
-      .filter((w) => w.length > 3);
-
-    let dbResults;
-    if (words.length > 0) {
-      const clauses = words.map((_, i) => `content ILIKE $${i + 2}`);
-      dbResults = await query<{ content: string }>(
-        `SELECT content FROM hindsight_mock_memories 
-         WHERE bank_id = $1 AND (${clauses.join(" OR ")}) 
-         ORDER BY created_at DESC LIMIT 5`,
-        [bankId, ...words.map((w) => `%${w}%`)]
-      );
-    } else {
-      dbResults = await query<{ content: string }>(
-        `SELECT content FROM hindsight_mock_memories 
-         WHERE bank_id = $1 
-         ORDER BY created_at DESC LIMIT 3`,
-        [bankId]
-      );
-    }
-
-    if (dbResults.rows.length === 0) {
-      return "FACTS: []";
-    }
-
-    const formattedFacts = dbResults.rows.map((row) => ({
-      text: row.content,
-      context: "Simulated local memory fallback",
-    }));
-
-    return "FACTS:\n" + JSON.stringify(formattedFacts, null, 2);
+    return recallMemoryMockFallback(bankId, queryText);
   }
 
   try {
@@ -122,33 +89,78 @@ async function recallMemoryMockFallback(bankId: string, queryText: string): Prom
     const words = queryText
       .replace(/[^\w\s]/g, "")
       .split(/\s+/)
+      .map((w) => w.toLowerCase())
       .filter((w) => w.length > 3);
 
-    let dbResults;
+    const rowsByContent = new Map<string, { content: string; context: string }>();
+
     if (words.length > 0) {
       const clauses = words.map((_, i) => `content ILIKE $${i + 2}`);
-      dbResults = await query<{ content: string }>(
+      const keywordResults = await query<{ content: string }>(
         `SELECT content FROM hindsight_mock_memories 
          WHERE bank_id = $1 AND (${clauses.join(" OR ")}) 
          ORDER BY created_at DESC LIMIT 5`,
         [bankId, ...words.map((w) => `%${w}%`)]
       );
-    } else {
-      dbResults = await query<{ content: string }>(
-        `SELECT content FROM hindsight_mock_memories 
-         WHERE bank_id = $1 
-         ORDER BY created_at DESC LIMIT 3`,
-        [bankId]
-      );
+
+      for (const row of keywordResults.rows) {
+        rowsByContent.set(row.content, {
+          content: row.content,
+          context: "Keyword-matched local memory",
+        });
+      }
     }
 
-    const formattedFacts = dbResults.rows.map((row) => ({
-      text: row.content,
-      context: "Simulated local memory fallback (Cloud API error backup)",
-    }));
+    // Always include recent entries from the bank. Questions like "what did we
+    // discuss earlier?" often have no useful overlap with the stored facts.
+    const recentResults = await query<{ content: string }>(
+      `SELECT content FROM hindsight_mock_memories 
+       WHERE bank_id = $1 
+       ORDER BY created_at DESC LIMIT 5`,
+      [bankId]
+    );
+
+    for (const row of recentResults.rows) {
+      if (!rowsByContent.has(row.content)) {
+        rowsByContent.set(row.content, {
+          content: row.content,
+          context: "Recent local memory from this bank",
+        });
+      }
+    }
+
+    if (rowsByContent.size === 0) {
+      return "FACTS: []";
+    }
+
+    const formattedFacts = Array.from(rowsByContent.values())
+      .slice(0, 8)
+      .map((row) => ({
+        text: row.content,
+        context: row.context,
+      }));
 
     return "FACTS:\n" + JSON.stringify(formattedFacts, null, 2);
-  } catch {
+  } catch (error) {
+    console.error(`Mock memory recall failed for bank ${bankId}:`, error);
     return "FACTS: []";
   }
+}
+
+/**
+ * Retain a lightweight transcript note for the current user.
+ * This gives future tickets memory even if the current ticket is never formally resolved.
+ */
+export async function retainConversationMemory(
+  bankId: string,
+  customerMessage: string,
+  agentMessage: string
+): Promise<void> {
+  const content = [
+    "Past conversation:",
+    `Customer: ${customerMessage}`,
+    `Agent: ${agentMessage}`,
+  ].join("\n");
+
+  await retainMemory(bankId, content);
 }

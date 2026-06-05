@@ -13,7 +13,7 @@ export async function generateAgentResponse(
 
   // Detect missing or placeholder API key
   if (!apiKey || apiKey === "your_groq_api_key_here" || apiKey.trim() === "") {
-    return getSimulatedResponse(chatHistory);
+    return getSimulatedResponse(chatHistory, customerMemories, sharedResolutions);
   }
 
   try {
@@ -77,7 +77,7 @@ CRITICAL RULES:
     return reply;
   } catch (error) {
     console.error("Failed to generate LLM response, falling back to simulation:", error);
-    return `[⚠️ System Note: Connection to Groq LLM failed. Running in simulated mode.]\n\nBased on your request, I suggest checking if your authentication credentials are valid. If you are experiencing a rate limit, please wait a few minutes before trying again or request a tier upgrade.`;
+    return `[System Note: Connection to Groq LLM failed. Running in simulated mode.]\n\n${getSimulatedResponse(chatHistory, customerMemories, sharedResolutions)}`;
   }
 }
 
@@ -85,15 +85,28 @@ CRITICAL RULES:
  * Returns a simulated customer support response when Groq API key is not configured.
  */
 function getSimulatedResponse(
-  chatHistory: { role: "user" | "agent"; content: string }[]
+  chatHistory: { role: "user" | "agent"; content: string }[],
+  customerMemories?: string,
+  sharedResolutions?: string
 ): string {
   const lastUserMessage = [...chatHistory]
     .reverse()
     .find((m) => m.role === "user")?.content.toLowerCase() || "";
 
   let simulatedReply = "";
+  const hasCustomerMemories = hasUsefulFacts(customerMemories);
+  const hasSharedResolutions = hasUsefulFacts(sharedResolutions);
 
-  if (lastUserMessage.includes("rate limit") || lastUserMessage.includes("api")) {
+  if (
+    hasCustomerMemories &&
+    (lastUserMessage.includes("remember") ||
+      lastUserMessage.includes("earlier") ||
+      lastUserMessage.includes("before") ||
+      lastUserMessage.includes("previous") ||
+      lastUserMessage.includes("past"))
+  ) {
+    simulatedReply = `I checked your customer memory bank. Here is what I found:\n\n${customerMemories}`;
+  } else if (lastUserMessage.includes("rate limit") || lastUserMessage.includes("api")) {
     simulatedReply = `I understand you're facing API rate limiting issues. This typically happens when your request rate exceeds your current tier limits. 
     
 To resolve this:
@@ -113,7 +126,15 @@ Please confirm:
 I'm currently running in **Simulation Mode** because your \`GROQ_API_KEY\` is set to the default placeholder. To enable live AI intelligence, please add a valid Groq API key to your \`.env\` file in the project root!`;
   }
 
+  if (hasSharedResolutions) {
+    simulatedReply += `\n\nI also checked the global resolution bank for similar cases:\n\n${sharedResolutions}`;
+  }
+
   return `[🤖 Simulated AI Agent]\n\n${simulatedReply}`;
+}
+
+function hasUsefulFacts(memoryText?: string): boolean {
+  return Boolean(memoryText && memoryText.trim() !== "" && memoryText.trim() !== "FACTS: []");
 }
 
 /**
@@ -178,3 +199,68 @@ export async function generateTicketSummary(
   }
 }
 
+/**
+ * Extract personal user context facts from a chat conversation.
+ * These are stored privately in the individual user's memory bank.
+ * Unlike generateTicketSummary, this is intentionally NOT anonymized.
+ */
+export async function generateUserContextFacts(
+  subject: string,
+  chatHistoryText: string
+): Promise<string> {
+  const apiKey = env.GROQ_API_KEY;
+
+  if (!apiKey || apiKey === "your_groq_api_key_here" || apiKey.trim() === "") {
+    return "NONE";
+  }
+
+  try {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a customer support CRM assistant. Your ONLY job is to extract personal facts the customer explicitly stated about themselves.\n" +
+              "OUTPUT FORMAT: Reply with a bullet list of facts using '- ' prefix. Example:\n" +
+              "- Customer uses ChatGPT\n" +
+              "- Customer's team has 5 members\n" +
+              "STRICT RULES:\n" +
+              "1. ONLY include facts the customer directly stated. Never guess or infer.\n" +
+              "2. NEVER write what is absent or not mentioned (e.g. do NOT write '- Customer did not mention their name').\n" +
+              "3. NEVER write negative statements about missing information.\n" +
+              "4. If you found ZERO personal facts stated by the customer, your ENTIRE response must be exactly the word: NONE\n" +
+              "5. Do not add any explanation, preamble, or commentary. Only bullet points or the single word NONE.",
+          },
+          {
+            role: "user",
+            content: `Ticket Subject: ${subject}\n\nChat History:\n${chatHistoryText}`,
+          },
+        ],
+        temperature: 0.2,
+        max_tokens: 300,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Groq API responded with status ${response.status}`);
+    }
+
+    const data = (await response.json()) as any;
+    const facts = data.choices?.[0]?.message?.content;
+    if (!facts) {
+      throw new Error("No completion returned from Groq user context request");
+    }
+
+    return facts.trim();
+  } catch (error) {
+    console.error("Failed to generate user context facts:", error);
+    return "NONE";
+  }
+}
