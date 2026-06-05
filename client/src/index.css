@@ -643,10 +643,153 @@ img { max-width: 100%; display: block; }
    ═══════════════════════════════════════ */
 
 .dashboard-welcome {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: var(--spacing-md);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--color-surface);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent 45%),
+    var(--color-surface-lowest);
+}
+
+.dashboard-welcome h3 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  max-width: 320px;
+}
+
+.dashboard-welcome p {
+  max-width: 520px;
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.dashboard-welcome strong {
+  color: var(--color-text-primary);
+}
+
+.dashboard-grid-main {
+  grid-column: span 8;
+}
+
+.dashboard-grid-side {
+  grid-column: span 4;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.dashboard-memory-title {
   margin-bottom: var(--spacing-md);
+}
+
+.dashboard-memory-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.dashboard-card-icon {
+  flex-shrink: 0;
+}
+
+.dashboard-card-icon-primary {
+  color: var(--color-primary);
+  font-size: 18px;
+}
+
+.dashboard-card-icon-success {
+  color: var(--color-success-light);
+  font-size: 18px;
+}
+
+.dashboard-card-icon-muted {
+  color: var(--color-text-muted);
+  font-size: 18px;
+}
+
+.dashboard-card-icon-large {
+  font-size: 20px;
+}
+
+.dashboard-card-icon-small {
+  font-size: 16px;
+}
+
+.dashboard-progress-88 {
+  width: 88%;
+}
+
+.dashboard-progress-99 {
+  width: 99%;
+}
+
+.dashboard-progress-45 {
+  width: 45%;
+}
+
+.dashboard-index-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.dashboard-index-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.dashboard-index-subtitle {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.dashboard-ticket-section {
+  padding: 0;
+  overflow: hidden;
+}
+
+.dashboard-table-container {
+  border: none;
+  border-radius: 0;
+}
+
+.dashboard-last-update {
+  text-align: right;
+}
+
+.memory-match-indicator.match-positive {
+  color: var(--color-success-light);
+}
+
+.memory-match-indicator.match-secondary {
+  color: var(--color-text-secondary);
+}
+
+.memory-match-indicator.match-muted {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 900px) {
+  .dashboard-welcome {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-welcome h3,
+  .dashboard-welcome p {
+    max-width: none;
+  }
 }
 
 .bento-card {
@@ -1012,15 +1155,6 @@ img { max-width: 100%; display: block; }
   border-color: var(--color-surface);
 }
 
-:root[data-theme="light"] .badge-open,
-[data-theme="light"] .badge-open,
-:root[data-theme="light"] .badge-resolved,
-[data-theme="light"] .badge-resolved {
-  background: #000000;
-  color: #ffffff;
-  border-color: #000000;
-}
-
 .priority-high, .priority-critical {
   color: #ff3333;
   font-weight: 600;
@@ -1186,18 +1320,6 @@ img { max-width: 100%; display: block; }
   background: var(--color-surface-lowest);
   color: var(--color-text-primary);
   border: 1px solid var(--color-surface);
-}
-
-:root[data-theme="light"] .message-bubble-wrapper.user .message-bubble,
-[data-theme="light"] .message-bubble-wrapper.user .message-bubble {
-  background: #000000;
-  color: #ffffff;
-  border-color: #000000;
-}
-
-:root[data-theme="light"] .message-bubble-wrapper.user .message-time,
-[data-theme="light"] .message-bubble-wrapper.user .message-time {
-  color: rgba(255, 255, 255, 0.72);
 }
 
 .message-time {
@@ -1837,6 +1959,46 @@ img { max-width: 100%; display: block; }
   line-height: 1.3;
 }
 
+:root[data-theme="light"] .portal-welcome-feature,
+[data-theme="light"] .portal-welcome-feature {
+  background: #111827;
+  border-color: #111827;
+  color: #ffffff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="light"] .portal-welcome-feature:hover,
+[data-theme="light"] .portal-welcome-feature:hover {
+  background: #111827;
+  border-color: #111827;
+}
+
+:root[data-theme="light"] .portal-welcome-feature-title,
+[data-theme="light"] .portal-welcome-feature-title {
+  color: #ffffff;
+}
+
+:root[data-theme="light"] .portal-welcome-feature-title .material-symbols-outlined,
+[data-theme="light"] .portal-welcome-feature-title .material-symbols-outlined,
+:root[data-theme="light"] .portal-welcome-feature p,
+[data-theme="light"] .portal-welcome-feature p {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+:root[data-theme="light"] .portal-welcome-card .btn-primary,
+[data-theme="light"] .portal-welcome-card .btn-primary {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+:root[data-theme="light"] .portal-welcome-card .btn-primary:hover,
+[data-theme="light"] .portal-welcome-card .btn-primary:hover {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
 /* ═══════════════════════════════════════
    18. TICKETS LOG
    ═══════════════════════════════════════ */
@@ -2015,9 +2177,7 @@ body {
 }
 
 .dashboard-welcome h3 {
-  font-size: 26px;
-  line-height: 1.15;
-  letter-spacing: 0;
+  color: #0f172a;
 }
 
 .dashboard-welcome p,
@@ -2236,8 +2396,8 @@ body {
 :root[data-theme="light"] .chat-history-container,
 [data-theme="light"] .chat-history-container {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 180px);
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
+  gap: 14px;
+  padding: 22px 24px;
 }
 
 :root[data-theme="light"] .chat-system-banner,
@@ -2252,37 +2412,37 @@ body {
 [data-theme="light"] .chat-resolved-banner,
 :root[data-theme="light"] .chat-side-resolved,
 [data-theme="light"] .chat-side-resolved {
-  background: #ffffff;
-  border-color: #dbe4f0;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  background: #111827;
+  border-color: #111827;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
 }
 
 :root[data-theme="light"] .chat-resolved-banner-title,
 [data-theme="light"] .chat-resolved-banner-title,
 :root[data-theme="light"] .chat-side-resolved-title,
 [data-theme="light"] .chat-side-resolved-title {
-  color: #000000;
+  color: #ffffff;
 }
 
 :root[data-theme="light"] .chat-resolved-banner p,
 [data-theme="light"] .chat-resolved-banner p,
 :root[data-theme="light"] .chat-side-resolved p,
 [data-theme="light"] .chat-side-resolved p {
-  color: #111827;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 :root[data-theme="light"] .chat-resolved-banner-title .material-symbols-outlined,
 [data-theme="light"] .chat-resolved-banner-title .material-symbols-outlined,
 :root[data-theme="light"] .chat-side-resolved-title .material-symbols-outlined,
 [data-theme="light"] .chat-side-resolved-title .material-symbols-outlined {
-  color: #000000;
+  color: #ffffff;
 }
 
 :root[data-theme="light"] .chat-input-bar,
 [data-theme="light"] .chat-input-bar {
   background: rgba(255, 255, 255, 0.94);
   border-top-color: #dbe4f0;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 16px 24px;
 }
 
 :root[data-theme="light"] .chat-input-field,
@@ -2319,9 +2479,9 @@ body {
 [data-theme="light"] .chat-send-btn,
 :root[data-theme="light"] .rating-btn.selected,
 [data-theme="light"] .rating-btn.selected {
-  background: #111827;
+  background: var(--color-surface-high);
   color: #ffffff;
-  border-color: #111827;
+  border-color: var(--color-surface-high);
 }
 
 :root[data-theme="light"] .chat-send-btn:disabled,

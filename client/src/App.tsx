@@ -156,7 +156,6 @@ function App() {
             tickets={tickets}
             loading={loadingTickets}
             onTicketSelect={handleTicketSelect}
-            onNewTicketClick={() => setShowNewTicketModal(true)}
           />
         );
 

@@ -1,34 +1,46 @@
-
 import type { Ticket } from "../types";
 
 interface DashboardViewProps {
   tickets: Ticket[];
   loading: boolean;
   onTicketSelect: (ticketId: string) => void;
-  onNewTicketClick: () => void;
 }
 
-export default function DashboardView({ tickets, loading, onTicketSelect, onNewTicketClick }: DashboardViewProps) {
+export default function DashboardView({
+  tickets,
+  loading,
+  onTicketSelect,
+}: DashboardViewProps) {
   // Compute some stats
   const totalTicketsCount = tickets.length;
-  const openTicketsCount = tickets.filter(t => t.status === 'open').length;
-  const resolvedTicketsCount = tickets.filter(t => t.status === 'resolved').length;
+  const openTicketsCount = tickets.filter((t) => t.status === "open").length;
+  const resolvedTicketsCount = tickets.filter(
+    (t) => t.status === "resolved",
+  ).length;
 
   const getPriorityClass = (priority: string) => {
     switch (priority) {
-      case 'critical': return 'priority-high';
-      case 'high': return 'priority-high';
-      case 'medium': return 'priority-medium';
-      default: return 'priority-low';
+      case "critical":
+        return "priority-high";
+      case "high":
+        return "priority-high";
+      case "medium":
+        return "priority-medium";
+      default:
+        return "priority-low";
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'resolved': return <span className="badge badge-resolved">Resolved</span>;
-      case 'closed': return <span className="badge badge-closed">Closed</span>;
-      case 'in_progress': return <span className="badge badge-pending">In Progress</span>;
-      default: return <span className="badge badge-open">Open</span>;
+      case "resolved":
+        return <span className="badge badge-resolved">Resolved</span>;
+      case "closed":
+        return <span className="badge badge-closed">Closed</span>;
+      case "in_progress":
+        return <span className="badge badge-pending">In Progress</span>;
+      default:
+        return <span className="badge badge-open">Open</span>;
     }
   };
 
@@ -36,7 +48,7 @@ export default function DashboardView({ tickets, loading, onTicketSelect, onNewT
     const s = subject.toLowerCase();
     if (s.includes("rate") || s.includes("limit")) {
       return (
-        <span className="memory-match-indicator" style={{ color: 'var(--color-success-light)' }}>
+        <span className="memory-match-indicator match-positive">
           <span className="material-symbols-outlined">auto_awesome</span>
           92% Match
         </span>
@@ -44,7 +56,7 @@ export default function DashboardView({ tickets, loading, onTicketSelect, onNewT
     }
     if (s.includes("sso") || s.includes("auth") || s.includes("login")) {
       return (
-        <span className="memory-match-indicator" style={{ color: 'var(--color-text-secondary)' }}>
+        <span className="memory-match-indicator match-secondary">
           <span className="material-symbols-outlined">history</span>
           New Context
         </span>
@@ -52,14 +64,14 @@ export default function DashboardView({ tickets, loading, onTicketSelect, onNewT
     }
     if (s.includes("seat") || s.includes("license")) {
       return (
-        <span className="memory-match-indicator" style={{ color: 'var(--color-success-light)' }}>
+        <span className="memory-match-indicator match-positive">
           <span className="material-symbols-outlined">done_all</span>
           Resolved via Memory
         </span>
       );
     }
     return (
-      <span className="memory-match-indicator" style={{ color: 'var(--color-text-muted)' }}>
+      <span className="memory-match-indicator match-muted">
         <span className="material-symbols-outlined">psychology</span>
         84% AI Match
       </span>
@@ -82,14 +94,18 @@ export default function DashboardView({ tickets, loading, onTicketSelect, onNewT
       <section className="dashboard-welcome">
         <h3>Welcome back, Agent</h3>
         <p>
-          Your AI support ecosystem is operating normally. You have <strong>{openTicketsCount} open ticket{openTicketsCount !== 1 ? 's' : ''}</strong> requiring attention.
+          Your AI support ecosystem is operating normally. You have{" "}
+          <strong>
+            {openTicketsCount} open ticket{openTicketsCount !== 1 ? "s" : ""}
+          </strong>{" "}
+          requiring attention.
         </p>
       </section>
 
       {/* Bento Grid */}
       <div className="bento-grid">
         {/* System Health Card */}
-        <div className="bento-card" style={{ gridColumn: 'span 8' }}>
+        <div className="bento-card dashboard-grid-main">
           <div className="bento-card-header">
             <h4 className="bento-card-title">
               <span className="material-symbols-outlined">monitoring</span>
@@ -105,11 +121,13 @@ export default function DashboardView({ tickets, loading, onTicketSelect, onNewT
             <div className="metric-card">
               <div className="metric-header">
                 <span>AI Inference (Groq)</span>
-                <span className="material-symbols-outlined" style={{ color: 'var(--color-primary)', fontSize: '18px' }}>psychology</span>
+                <span className="material-symbols-outlined dashboard-card-icon dashboard-card-icon-primary">
+                  psychology
+                </span>
               </div>
               <div className="metric-value">42ms</div>
               <div className="metric-progress-bar">
-                <div className="metric-progress-fill teal" style={{ width: '88%' }} />
+                <div className="metric-progress-fill teal dashboard-progress-88" />
               </div>
               <div className="metric-footer">P99 Latency</div>
             </div>
@@ -117,11 +135,13 @@ export default function DashboardView({ tickets, loading, onTicketSelect, onNewT
             <div className="metric-card">
               <div className="metric-header">
                 <span>Memory (Hindsight)</span>
-                <span className="material-symbols-outlined" style={{ color: 'var(--color-success-light)', fontSize: '18px' }}>database</span>
+                <span className="material-symbols-outlined dashboard-card-icon dashboard-card-icon-success">
+                  database
+                </span>
               </div>
               <div className="metric-value">99.9%</div>
               <div className="metric-progress-bar">
-                <div className="metric-progress-fill green" style={{ width: '99%' }} />
+                <div className="metric-progress-fill green dashboard-progress-99" />
               </div>
               <div className="metric-footer">Retrieval Accuracy</div>
             </div>
@@ -129,11 +149,13 @@ export default function DashboardView({ tickets, loading, onTicketSelect, onNewT
             <div className="metric-card">
               <div className="metric-header">
                 <span>DB (PostgreSQL)</span>
-                <span className="material-symbols-outlined" style={{ color: 'var(--color-text-muted)', fontSize: '18px' }}>storage</span>
+                <span className="material-symbols-outlined dashboard-card-icon dashboard-card-icon-muted">
+                  storage
+                </span>
               </div>
               <div className="metric-value">{totalTicketsCount} Records</div>
               <div className="metric-progress-bar">
-                <div className="metric-progress-fill slate" style={{ width: '45%' }} />
+                <div className="metric-progress-fill slate dashboard-progress-45" />
               </div>
               <div className="metric-footer">Seeded & Live Tickets</div>
             </div>
@@ -141,41 +163,49 @@ export default function DashboardView({ tickets, loading, onTicketSelect, onNewT
         </div>
 
         {/* Right Column */}
-        <div style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
+        <div className="dashboard-grid-side">
           {/* Memory Banks Card */}
           <div className="bento-card bento-card-accent">
             <div>
-              <h4 className="bento-card-title" style={{ marginBottom: 'var(--spacing-md)' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>neurology</span>
+              <h4 className="bento-card-title dashboard-memory-title">
+                <span className="material-symbols-outlined dashboard-card-icon dashboard-card-icon-large">
+                  neurology
+                </span>
                 Hindsight Memory
               </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+              <div className="dashboard-memory-stack">
                 <div className="accent-card-row">
                   <span className="accent-card-row-label">
-                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>person_search</span>
+                    <span className="material-symbols-outlined dashboard-card-icon dashboard-card-icon-small">
+                      person_search
+                    </span>
                     Customer Profiles
                   </span>
-                  <span className="accent-card-row-value">{resolvedTicketsCount > 0 ? "Synced" : "Awaiting"}</span>
+                  <span className="accent-card-row-value">
+                    {resolvedTicketsCount > 0 ? "Synced" : "Awaiting"}
+                  </span>
                 </div>
                 <div className="accent-card-row">
                   <span className="accent-card-row-label">
-                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>verified_user</span>
+                    <span className="material-symbols-outlined dashboard-card-icon dashboard-card-icon-small">
+                      verified_user
+                    </span>
                     Resolution Bank
                   </span>
-                  <span className="accent-card-row-value">{resolvedTicketsCount} Solutions</span>
+                  <span className="accent-card-row-value">
+                    {resolvedTicketsCount} Solutions
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* AI Indexing Card */}
-          <div className="bento-card" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+          <div className="bento-card dashboard-index-card">
             <div className="spinner-ring" />
             <div>
-              <h5 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                AI Vector Re-indexing
-              </h5>
-              <p style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+              <h5 className="dashboard-index-title">AI Vector Re-indexing</h5>
+              <p className="dashboard-index-subtitle">
                 Auto-indexing from resolved tickets...
               </p>
             </div>
@@ -184,27 +214,22 @@ export default function DashboardView({ tickets, loading, onTicketSelect, onNewT
       </div>
 
       {/* Tickets Table */}
-      <section className="bento-card" style={{ padding: 0, overflow: 'hidden' }}>
+      <section className="bento-card dashboard-ticket-section">
         <div className="table-header">
           <h4 className="table-header-title">Support Tickets</h4>
-          <button onClick={onNewTicketClick} className="table-header-action">
-            Create Ticket
-            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
-          </button>
         </div>
 
         {loading ? (
           <div className="table-loading">Loading tickets...</div>
         ) : tickets.length === 0 ? (
           <div className="table-empty">
-            <span className="material-symbols-outlined table-empty-icon">inbox</span>
+            <span className="material-symbols-outlined table-empty-icon">
+              inbox
+            </span>
             <p>No tickets found in the database.</p>
-            <button className="btn-primary" onClick={onNewTicketClick}>
-              File Your First Ticket
-            </button>
           </div>
         ) : (
-          <div className="table-container" style={{ border: 'none', borderRadius: 0 }}>
+          <div className="table-container dashboard-table-container">
             <table className="activity-table">
               <thead>
                 <tr>
@@ -212,14 +237,16 @@ export default function DashboardView({ tickets, loading, onTicketSelect, onNewT
                   <th>Customer</th>
                   <th>Memory Match</th>
                   <th>Status</th>
-                  <th style={{ textAlign: 'right' }}>Last Update</th>
+                  <th className="dashboard-last-update">Last Update</th>
                 </tr>
               </thead>
               <tbody>
                 {tickets.map((ticket) => (
                   <tr key={ticket.id} onClick={() => onTicketSelect(ticket.id)}>
                     <td>
-                      <div className="ticket-detail-subject">{ticket.subject}</div>
+                      <div className="ticket-detail-subject">
+                        {ticket.subject}
+                      </div>
                       <div className="ticket-detail-meta">
                         <span>#{ticket.id.substring(0, 8)}</span>
                         <span>•</span>
@@ -231,7 +258,12 @@ export default function DashboardView({ tickets, loading, onTicketSelect, onNewT
                     <td>
                       <div className="customer-cell">
                         <div className="customer-cell-avatar">
-                          {ticket.customer_name ? ticket.customer_name.split(' ').map(n=>n[0]).join('') : "CU"}
+                          {ticket.customer_name
+                            ? ticket.customer_name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")
+                            : "CU"}
                         </div>
                         <span>{ticket.customer_name || "Customer"}</span>
                       </div>
