@@ -246,9 +246,6 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
                 {ticket.status.replace('_', ' ')}
               </span>
             </h3>
-            <div className="chat-pane-meta">
-              Opened: {new Date(ticket.created_at).toLocaleString()}
-            </div>
           </div>
 
           {/* Customer resolve action */}

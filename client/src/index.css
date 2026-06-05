@@ -1,4 +1,4 @@
-﻿/* ──────────────────────────────────────────────
+/* ──────────────────────────────────────────────
    SupportDesk — Minimalist Monochrome Design System
    Complete UI CSS Architecture (Black & White Theme)
    ────────────────────────────────────────────── */
@@ -1302,16 +1302,16 @@ img { max-width: 100%; display: block; }
 [data-theme="light"] .theme-toggle-btn {
   background: #ffffff;
   color: #5c564b;
-  border-color: var(--color-sidebar-border);
-  box-shadow: var(--shadow-xs);
+  border: none;
+  box-shadow: none;
 }
 
 :root[data-theme="light"] .theme-toggle-btn:hover,
 [data-theme="light"] .theme-toggle-btn:hover {
   background: var(--color-surface-low);
   color: #1a1714;
-  border-color: var(--color-surface-high);
-  box-shadow: var(--shadow-sm);
+  border: none;
+  box-shadow: none;
 }
 
 :root[data-theme="light"] .header-search-input,
@@ -1929,30 +1929,30 @@ img { max-width: 100%; display: block; }
 [data-theme="light"] .chat-resolved-banner,
 :root[data-theme="light"] .chat-side-resolved,
 [data-theme="light"] .chat-side-resolved {
-  background: #1a1714;
-  border-color: #1a1714;
-  box-shadow: 0 8px 24px rgba(26, 23, 20, 0.14);
+  background: #ffffff;
+  border-color: var(--color-sidebar-border);
+  box-shadow: var(--shadow-md);
 }
 
 :root[data-theme="light"] .chat-resolved-banner-title,
 [data-theme="light"] .chat-resolved-banner-title,
 :root[data-theme="light"] .chat-side-resolved-title,
 [data-theme="light"] .chat-side-resolved-title {
-  color: #faf9f7;
+  color: #1a1714;
 }
 
 :root[data-theme="light"] .chat-resolved-banner p,
 [data-theme="light"] .chat-resolved-banner p,
 :root[data-theme="light"] .chat-side-resolved p,
 [data-theme="light"] .chat-side-resolved p {
-  color: rgba(250, 249, 247, 0.65);
+  color: var(--color-text-secondary);
 }
 
 :root[data-theme="light"] .chat-resolved-banner-title .material-symbols-outlined,
 [data-theme="light"] .chat-resolved-banner-title .material-symbols-outlined,
 :root[data-theme="light"] .chat-side-resolved-title .material-symbols-outlined,
 [data-theme="light"] .chat-side-resolved-title .material-symbols-outlined {
-  color: #faf9f7;
+  color: #1a1714;
 }
 
 /* ── Rating Buttons (Light) ── */
@@ -2309,7 +2309,7 @@ img { max-width: 100%; display: block; }
 }
 
 .chat-pane-header {
-  padding: 18px 24px;
+  padding: 12px 24px;
   background: rgba(10, 10, 10, 0.8);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
