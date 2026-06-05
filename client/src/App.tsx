@@ -14,9 +14,14 @@ import CustomerLogin from "./components/CustomerLogin";
 function App() {
   // 1. Path-based Routing
   const isAdmin = window.location.pathname === "/admin";
+  const getInitialTheme = (): 'dark' | 'light' => {
+    const storedTheme = localStorage.getItem("supportdesk_theme");
+    return storedTheme === "light" ? "light" : "dark";
+  };
 
   // Portal & Session States
   const [portalMode] = useState<'agent' | 'customer'>(isAdmin ? 'agent' : 'customer');
+  const [theme, setTheme] = useState<'dark' | 'light'>(getInitialTheme);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loadingSession, setLoadingSession] = useState<boolean>(!isAdmin); // only loading session for customers
 
@@ -31,6 +36,15 @@ function App() {
   const [loadingTickets, setLoadingTickets] = useState<boolean>(true);
   const [serverOnline, setServerOnline] = useState<boolean>(false);
   const [dbConnected, setDbConnected] = useState<boolean>(false);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem("supportdesk_theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(currentTheme => currentTheme === "dark" ? "light" : "dark");
+  };
 
   // 1. Load Cookie Session (Customer Mode)
   useEffect(() => {
@@ -263,15 +277,23 @@ function App() {
   // 2. Render Login gateway if Customer is not signed in
   if (!isAdmin && !currentUser) {
     return (
-      <div className="app-container" style={{ flexDirection: "column" }}>
+      <div className="app-container" data-theme={theme} style={{ flexDirection: "column" }}>
         <header className="login-page-header">
           <h2 className="login-page-title">
             <span className="material-symbols-outlined">support_agent</span>
             Customer Support Portal
           </h2>
-          <div className="login-page-status">
-            Server connection secure
-          </div>
+          <button
+            type="button"
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          >
+            <span className="material-symbols-outlined">
+              {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+            </span>
+          </button>
         </header>
         <CustomerLogin onIdentifySuccess={handleIdentifySuccess} />
       </div>
@@ -280,7 +302,7 @@ function App() {
 
   // 3. Render authenticated layout (Customer or Admin)
   return (
-    <div className="app-container">
+    <div className="app-container" data-theme={theme}>
       {/* Sidebar Navigation */}
       <Sidebar
         activeTab={activeTab}
@@ -303,6 +325,8 @@ function App() {
           users={currentUser ? [currentUser] : []}
           selectedCustomerId={currentUser?.id || ""}
           setSelectedCustomerId={() => {}} // User ID locked by cookie
+          theme={theme}
+          onThemeToggle={toggleTheme}
         />
 
         {/* Dynamic Tab Body */}

@@ -13,7 +13,6 @@ export default function NewTicketModal({ onClose, onSuccess, preselectedUserId }
   const [userId, setUserId] = useState(preselectedUserId || "");
   const [subject, setSubject] = useState("");
   const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'critical'>('medium');
-  const [description, setDescription] = useState("");
   
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -42,13 +41,14 @@ export default function NewTicketModal({ onClose, onSuccess, preselectedUserId }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userId || !subject.trim() || !description.trim() || submitting) return;
+    const trimmedSubject = subject.trim();
+    if (!userId || !trimmedSubject || submitting) return;
 
     setSubmitting(true);
     setError(null);
 
     try {
-      const res = await createTicket(userId, subject, description, priority);
+      const res = await createTicket(userId, trimmedSubject, trimmedSubject, priority);
       if (res.success && res.data) {
         onSuccess(res.data.ticket.id);
       } else {
@@ -134,20 +134,6 @@ export default function NewTicketModal({ onClose, onSuccess, preselectedUserId }
               <option value="high">High</option>
               <option value="critical">Critical</option>
             </select>
-          </div>
-
-          {/* Description */}
-          <div className="form-group">
-            <label className="form-label">Complaint / Problem Description</label>
-            <textarea
-              className="form-textarea"
-              placeholder="Describe the technical issue in detail..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              rows={4}
-              style={{ resize: "none" }}
-            />
           </div>
 
           {/* Form Actions */}

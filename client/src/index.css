@@ -1899,3 +1899,291 @@ img { max-width: 100%; display: block; }
 .animate-fade-in {
   animation: fadeIn var(--duration-normal) var(--ease-out);
 }
+
+/* Light/dark mode and slightly larger UI scale */
+:root[data-theme="light"],
+[data-theme="light"] {
+  --color-bg: #f5f7fb;
+  --color-bg-warm: #f8fafc;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #f8fafc;
+  --color-surface: #e5e7eb;
+  --color-surface-high: #cbd5e1;
+  --color-surface-highest: #94a3b8;
+  --color-text-primary: #111827;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  --color-text-inverse: #ffffff;
+  --color-primary: #111827;
+  --color-primary-hover: #1f2937;
+  --color-primary-light: #334155;
+  --color-primary-muted: rgba(17, 24, 39, 0.06);
+  --color-primary-glow: rgba(17, 24, 39, 0.08);
+  --color-on-primary: #ffffff;
+  --color-accent: #2563eb;
+  --color-accent-light: #1d4ed8;
+  --color-accent-muted: rgba(37, 99, 235, 0.08);
+  --color-success: #047857;
+  --color-success-light: #059669;
+  --color-success-muted: rgba(5, 150, 105, 0.1);
+  --color-error: #dc2626;
+  --color-error-light: #ef4444;
+  --color-error-muted: rgba(220, 38, 38, 0.08);
+  --color-error-container: #fef2f2;
+  --color-warning: #b45309;
+  --color-warning-muted: rgba(180, 83, 9, 0.08);
+  --color-sidebar-bg: #ffffff;
+  --color-sidebar-surface: #eef2ff;
+  --color-sidebar-border: #e2e8f0;
+  --color-sidebar-text: #64748b;
+  --color-sidebar-text-active: #111827;
+  --color-sidebar-hover: #f1f5f9;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 22px 55px rgba(15, 23, 42, 0.12);
+}
+
+body {
+  font-size: 15px;
+}
+
+.app-container,
+.main-content,
+.sidebar,
+.app-header,
+.modal-content,
+.bento-card,
+.table-container,
+.login-card,
+.portal-welcome-card {
+  transition:
+    background-color var(--duration-normal) var(--ease-out),
+    border-color var(--duration-normal) var(--ease-out),
+    color var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.scrollable-body {
+  padding: 28px;
+}
+
+.app-header {
+  background: color-mix(in srgb, var(--color-bg) 86%, transparent);
+  border-bottom-color: var(--color-sidebar-border);
+}
+
+.theme-toggle-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-surface);
+  background: var(--color-surface-lowest);
+  color: var(--color-text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+}
+
+.theme-toggle-btn:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-surface-high);
+  background: var(--color-surface-low);
+}
+
+.theme-toggle-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.dashboard-welcome h3 {
+  font-size: 26px;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.dashboard-welcome p,
+.portal-welcome-subtitle,
+.login-subtitle {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.sidebar-brand-title {
+  font-size: 19px;
+  letter-spacing: 0;
+}
+
+.sidebar-nav-item,
+.sidebar-ticket-item {
+  min-height: 42px;
+  font-size: 14px;
+  padding: 10px 14px;
+}
+
+.sidebar-section-label,
+.form-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.sidebar-btn-primary,
+.sidebar-btn-secondary,
+.sidebar-signout-btn,
+.btn-primary,
+.btn-secondary,
+.table-header-action {
+  min-height: 42px;
+  font-size: 14px;
+  padding: 10px 18px;
+}
+
+.form-input,
+.form-select,
+.form-textarea,
+.header-search-input,
+.header-customer-select,
+.chat-input-field {
+  min-height: 46px;
+  font-size: 15px;
+  background: var(--color-surface-lowest);
+  border-color: var(--color-surface);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus,
+.header-search-input:focus,
+.header-customer-select:focus,
+.chat-input-field:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-muted);
+}
+
+.login-page-header {
+  background: var(--color-sidebar-bg);
+  border-bottom-color: var(--color-sidebar-border);
+}
+
+.login-page-title {
+  color: var(--color-text-primary);
+  font-size: 17px;
+  letter-spacing: 0;
+}
+
+.login-card {
+  width: 480px;
+  padding: 36px;
+  box-shadow: var(--shadow-sm);
+}
+
+.login-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 14px;
+}
+
+.login-icon-wrapper .material-symbols-outlined {
+  font-size: 28px;
+}
+
+.login-title,
+.portal-welcome-title,
+.tickets-log-title {
+  font-size: 24px;
+  letter-spacing: 0;
+}
+
+.login-form {
+  gap: 16px;
+}
+
+.login-form .form-group {
+  margin-bottom: 0;
+}
+
+.login-submit-btn {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.modal-content {
+  width: 460px;
+  padding: 26px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-title {
+  font-size: 20px;
+}
+
+.activity-table th,
+.activity-table td {
+  font-size: 14px;
+  padding: 16px;
+}
+
+.ticket-detail-subject {
+  font-size: 15px;
+}
+
+.header-breadcrumbs,
+.header-search-input,
+.header-customer-select,
+.header-profile-name {
+  font-size: 14px;
+}
+
+.header-profile-role,
+.login-page-status,
+.login-tips p,
+.portal-welcome-feature p {
+  font-size: 12px;
+}
+
+:root[data-theme="light"] .main-content,
+[data-theme="light"] .main-content,
+:root[data-theme="light"] .login-container,
+[data-theme="light"] .login-container,
+:root[data-theme="light"] .portal-welcome-container,
+[data-theme="light"] .portal-welcome-container {
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.06), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.04), transparent 36%),
+    var(--color-bg);
+}
+
+:root[data-theme="light"] .login-page-header,
+[data-theme="light"] .login-page-header {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+}
+
+:root[data-theme="light"] .login-card,
+[data-theme="light"] .login-card,
+:root[data-theme="light"] .bento-card,
+[data-theme="light"] .bento-card,
+:root[data-theme="light"] .modal-content,
+[data-theme="light"] .modal-content {
+  border-color: #d9e2ef;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.1);
+}
+
+:root[data-theme="light"] .theme-toggle-btn,
+[data-theme="light"] .theme-toggle-btn,
+:root[data-theme="light"] .form-input,
+[data-theme="light"] .form-input,
+:root[data-theme="light"] .form-select,
+[data-theme="light"] .form-select {
+  border-color: #d9e2ef;
+}
+
+:root[data-theme="light"] .sidebar-nav-item.active,
+[data-theme="light"] .sidebar-nav-item.active,
+:root[data-theme="light"] .sidebar-ticket-item.active,
+[data-theme="light"] .sidebar-ticket-item.active {
+  background: var(--color-sidebar-surface);
+  color: var(--color-sidebar-text-active);
+}

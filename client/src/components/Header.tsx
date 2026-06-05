@@ -7,6 +7,8 @@ interface HeaderProps {
   users: User[];
   selectedCustomerId: string;
   setSelectedCustomerId: (id: string) => void;
+  theme: 'dark' | 'light';
+  onThemeToggle: () => void;
 }
 
 export default function Header({
@@ -14,6 +16,8 @@ export default function Header({
   users,
   selectedCustomerId,
   setSelectedCustomerId,
+  theme,
+  onThemeToggle,
 }: HeaderProps) {
   
   const isAgent = portalMode === 'agent';
@@ -44,6 +48,18 @@ export default function Header({
 
       {/* Right: Actions & Profile */}
       <div className="header-right">
+        <button
+          type="button"
+          className="theme-toggle-btn"
+          onClick={onThemeToggle}
+          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+        >
+          <span className="material-symbols-outlined">
+            {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+          </span>
+        </button>
+
         {/* Profile / Customer Selector */}
         {isAgent ? (
           <div className="header-profile">
