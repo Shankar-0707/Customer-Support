@@ -14,19 +14,23 @@ import CustomerLogin from "./components/CustomerLogin";
 function App() {
   // 1. Path-based Routing
   const isAdmin = window.location.pathname === "/admin";
-  const getInitialTheme = (): 'dark' | 'light' => {
+  const getInitialTheme = (): "dark" | "light" => {
     const storedTheme = localStorage.getItem("supportdesk_theme");
     return storedTheme === "light" ? "light" : "dark";
   };
 
   // Portal & Session States
-  const [portalMode] = useState<'agent' | 'customer'>(isAdmin ? 'agent' : 'customer');
-  const [theme, setTheme] = useState<'dark' | 'light'>(getInitialTheme);
+  const [portalMode] = useState<"agent" | "customer">(
+    isAdmin ? "agent" : "customer",
+  );
+  const [theme, setTheme] = useState<"dark" | "light">(getInitialTheme);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loadingSession, setLoadingSession] = useState<boolean>(!isAdmin); // only loading session for customers
 
   // Navigation & UI State
-  const [activeTab, setActiveTab] = useState<string>(isAdmin ? "dashboard" : "customer-portal");
+  const [activeTab, setActiveTab] = useState<string>(
+    isAdmin ? "dashboard" : "customer-portal",
+  );
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [showNewTicketModal, setShowNewTicketModal] = useState<boolean>(false);
 
@@ -43,7 +47,7 @@ function App() {
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(currentTheme => currentTheme === "dark" ? "light" : "dark");
+    setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"));
   };
 
   // 1. Load Cookie Session (Customer Mode)
@@ -175,27 +179,34 @@ function App() {
                   Hello, {currentUser?.name || "Valued Customer"}!
                 </h3>
                 <p className="portal-welcome-subtitle">
-                  Welcome to the Customer Support Portal. Your conversations are powered by secure cookie sessions and adaptive AI memory.
+                  Welcome to the Customer Support Portal. Your conversations are
+                  powered by secure cookie sessions and adaptive AI memory.
                 </p>
               </div>
 
               <div className="portal-welcome-grid">
                 <div className="portal-welcome-feature">
                   <h4 className="portal-welcome-feature-title">
-                    <span className="material-symbols-outlined">quickreply</span>
+                    <span className="material-symbols-outlined">
+                      quickreply
+                    </span>
                     Chat History
                   </h4>
                   <p>
-                    Select any of your previous support tickets from the left panel to resume your chat session.
+                    Select any of your previous support tickets from the left
+                    panel to resume your chat session.
                   </p>
                 </div>
                 <div className="portal-welcome-feature">
                   <h4 className="portal-welcome-feature-title">
-                    <span className="material-symbols-outlined">rate_review</span>
+                    <span className="material-symbols-outlined">
+                      rate_review
+                    </span>
                     New Ticket
                   </h4>
                   <p>
-                    Need fresh assistance? Click "File a Complaint" below to instantly spawn an AI-assisted ticket.
+                    Need fresh assistance? Click "File a Complaint" below to
+                    instantly spawn an AI-assisted ticket.
                   </p>
                 </div>
               </div>
@@ -214,19 +225,13 @@ function App() {
       case "tickets-log":
         return (
           <div className="scrollable-body animate-fade-in">
-            <h3 className="tickets-log-title">
-              Tickets Log Directory
-            </h3>
-            
+            <h3 className="tickets-log-title">Tickets Log Directory</h3>
+
             <div className="table-container">
               {loadingTickets ? (
-                <div className="table-loading">
-                  Loading logs...
-                </div>
+                <div className="table-loading">Loading logs...</div>
               ) : tickets.length === 0 ? (
-                <div className="table-empty">
-                  No tickets found.
-                </div>
+                <div className="table-empty">No tickets found.</div>
               ) : (
                 <table className="activity-table">
                   <thead>
@@ -240,12 +245,21 @@ function App() {
                   </thead>
                   <tbody>
                     {tickets.map((ticket) => (
-                      <tr key={ticket.id} onClick={() => handleTicketSelect(ticket.id)}>
-                        <td className="ticket-detail-subject">{ticket.subject}</td>
+                      <tr
+                        key={ticket.id}
+                        onClick={() => handleTicketSelect(ticket.id)}
+                      >
+                        <td className="ticket-detail-subject">
+                          {ticket.subject}
+                        </td>
                         <td>{ticket.customer_name}</td>
-                        <td className={`priority-${ticket.priority}`}>{ticket.priority}</td>
+                        <td className={`priority-${ticket.priority}`}>
+                          {ticket.priority}
+                        </td>
                         <td>
-                          <span className={`badge ${ticket.status === 'resolved' ? 'badge-resolved' : 'badge-open'}`}>
+                          <span
+                            className={`badge ${ticket.status === "resolved" ? "badge-resolved" : "badge-open"}`}
+                          >
                             {ticket.status}
                           </span>
                         </td>
@@ -277,7 +291,7 @@ function App() {
   // 2. Render Login gateway if Customer is not signed in
   if (!isAdmin && !currentUser) {
     return (
-      <div className="app-container" data-theme={theme} style={{ flexDirection: "column" }}>
+      <div className="app-container app-login-container" data-theme={theme}>
         <header className="login-page-header">
           <h2 className="login-page-title">
             <span className="material-symbols-outlined">support_agent</span>
@@ -287,11 +301,11 @@ function App() {
             type="button"
             className="theme-toggle-btn"
             onClick={toggleTheme}
-            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
           >
             <span className="material-symbols-outlined">
-              {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+              {theme === "dark" ? "light_mode" : "dark_mode"}
             </span>
           </button>
         </header>
@@ -310,7 +324,7 @@ function App() {
         onNewTicketClick={() => setShowNewTicketModal(true)}
         portalMode={portalMode}
         onSignOut={handleSignOut}
-        customerTickets={tickets.filter(t => t.user_id === currentUser?.id)}
+        customerTickets={tickets.filter((t) => t.user_id === currentUser?.id)}
         selectedTicketId={selectedTicketId}
         onTicketSelect={handleTicketSelect}
       />
@@ -324,7 +338,6 @@ function App() {
           portalMode={portalMode}
           users={currentUser ? [currentUser] : []}
           selectedCustomerId={currentUser?.id || ""}
-          setSelectedCustomerId={() => {}} // User ID locked by cookie
           theme={theme}
           onThemeToggle={toggleTheme}
         />
