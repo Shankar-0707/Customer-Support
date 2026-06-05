@@ -41,10 +41,18 @@ export async function identifyUser(email: string, name?: string): Promise<ApiRes
 }
 
 /**
- * Fetch all tickets.
+ * Fetch all tickets (admin use).
  */
 export async function getTickets(): Promise<ApiResponse<(Ticket & { customer_name: string; customer_email: string; session_id: string })[]>> {
   const response = await fetch(`${API_URL}/tickets`);
+  return response.json();
+}
+
+/**
+ * Fetch tickets for a specific user (customer portal).
+ */
+export async function getTicketsByUser(userId: string): Promise<ApiResponse<(Ticket & { customer_name: string; customer_email: string; session_id: string })[]>> {
+  const response = await fetch(`${API_URL}/tickets?userId=${encodeURIComponent(userId)}`);
   return response.json();
 }
 

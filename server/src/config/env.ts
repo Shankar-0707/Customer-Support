@@ -35,7 +35,7 @@ const envSchema = z.object({
   HINDSIGHT_API_URL: z
     .string()
     .url()
-    .default("https://api.hindsight.vectorize.io"),
+    .default("https://api.hindsight.vectorize.io/v1"),
 });
 
 /**

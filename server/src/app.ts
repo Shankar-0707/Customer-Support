@@ -12,7 +12,14 @@ export function createApp(): express.Express {
   const app = express();
 
   // ──── Core Middleware ────
-  app.use(cors());
+  const frontendUrl = process.env.FRONTEND_URL;
+  app.use(
+    cors({
+      origin: frontendUrl ? [frontendUrl, "http://localhost:5173"] : "*",
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    }),
+  );
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(requestLogger);

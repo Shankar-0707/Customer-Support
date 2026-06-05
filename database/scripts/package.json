@@ -1,0 +1,12 @@
+{
+  "name": "customer-support-db-scripts",
+  "version": "1.0.0",
+  "description": "Database import scripts for Customer Support Agent",
+  "type": "module",
+  "scripts": {
+    "import:kaggle": "node import_kaggle_twitter.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.21.0"
+  }
+}

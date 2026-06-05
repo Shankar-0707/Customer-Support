@@ -1,13 +1,16 @@
 import type { Request, Response, NextFunction } from "express";
 import * as ticketService from "../services/ticket.service.js";
-import { getOrCreateChatSession } from "../services/chat.service.js";
+import { getOrCreateChatSession, addMessage } from "../services/chat.service.js";
 
 /**
  * Get all tickets.
  */
 export async function list(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const tickets = await ticketService.getAllTickets();
+    const { userId } = req.query as { userId?: string };
+    const tickets = userId
+      ? await ticketService.getTicketsByUserId(userId)
+      : await ticketService.getAllTickets();
     res.json({ success: true, data: tickets });
   } catch (error) {
     next(error);
@@ -52,14 +55,16 @@ export async function create(req: Request, res: Response, next: NextFunction): P
     // 2. Create an associated chat session
     const session = await getOrCreateChatSession(ticket.id, userId);
 
+    // 3. Post a clean initial greeting from the AI agent as the first chat message
+    await addMessage(session.id, 'agent', 'Hello! How can I help you today?');
 
-
-
+    // 4. Auto-set ticket to in_progress now that there's a first message
+    await ticketService.updateTicketStatus(ticket.id, 'in_progress');
 
     res.status(201).json({
       success: true,
       data: {
-        ticket,
+        ticket: { ...ticket, status: 'in_progress' },
         sessionId: session.id,
       },
     });

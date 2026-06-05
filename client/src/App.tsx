@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { checkHealth, getTickets, getUserById } from "./api";
+import { checkHealth, getTickets, getTicketsByUser, getUserById } from "./api";
 import type { Ticket, HealthCheckResponse, User } from "./types";
 import { getCookie, setCookie, deleteCookie } from "./utils/cookieUtils";
 
@@ -10,6 +10,7 @@ import DashboardView from "./components/DashboardView";
 import ChatView from "./components/ChatView";
 import NewTicketModal from "./components/NewTicketModal";
 import CustomerLogin from "./components/CustomerLogin";
+import AdminLogin from "./components/AdminLogin";
 
 function App() {
   // 1. Path-based Routing
@@ -26,6 +27,11 @@ function App() {
   const [theme, setTheme] = useState<"dark" | "light">(getInitialTheme);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loadingSession, setLoadingSession] = useState<boolean>(!isAdmin); // only loading session for customers
+
+  // Admin gate — persisted in sessionStorage (resets on browser close)
+  const [adminAuthenticated, setAdminAuthenticated] = useState<boolean>(
+    isAdmin ? sessionStorage.getItem("admin_authenticated") === "true" : false
+  );
 
   // Navigation & UI State
   const [activeTab, setActiveTab] = useState<string>(
@@ -103,7 +109,12 @@ function App() {
   const loadTickets = async () => {
     setLoadingTickets(true);
     try {
-      const res = await getTickets();
+      // Admin sees all tickets; customers see only their own
+      const res = isAdmin
+        ? await getTickets()
+        : currentUser
+          ? await getTicketsByUser(currentUser.id)
+          : { success: true, data: [] as typeof tickets };
       if (res.success && res.data) {
         setTickets(res.data);
       }
@@ -122,7 +133,11 @@ function App() {
   const handleIdentifySuccess = (user: User) => {
     setCookie("customer_session_id", user.id, 7); // Save session cookie for 7 days
     setCurrentUser(user);
-    loadTickets(); // Reload tickets for identified user
+    // Load tickets for the newly identified user directly
+    setLoadingTickets(true);
+    getTicketsByUser(user.id).then((res) => {
+      if (res.success && res.data) setTickets(res.data);
+    }).catch(() => {}).finally(() => setLoadingTickets(false));
   };
 
   // Handle Sign Out
@@ -131,6 +146,12 @@ function App() {
     setCurrentUser(null);
     setSelectedTicketId(null);
     setActiveTab("customer-portal");
+  };
+
+  // Handle Admin Sign Out — clears sessionStorage flag and returns to gate
+  const handleAdminSignOut = () => {
+    sessionStorage.removeItem("admin_authenticated");
+    setAdminAuthenticated(false);
   };
 
   // Handle click on ticket in table
@@ -283,7 +304,18 @@ function App() {
     );
   }
 
-  // 2. Render Login gateway if Customer is not signed in
+  // 2. Admin gate — show password screen if admin hasn't authenticated
+  if (isAdmin && !adminAuthenticated) {
+    return (
+      <AdminLogin
+        onSuccess={() => setAdminAuthenticated(true)}
+        theme={theme}
+        onThemeToggle={toggleTheme}
+      />
+    );
+  }
+
+  // 3. Render Login gateway if Customer is not signed in
   if (!isAdmin && !currentUser) {
     return (
       <div className="app-container app-login-container" data-theme={theme}>
@@ -318,7 +350,7 @@ function App() {
         setActiveTab={setActiveTab}
         onNewTicketClick={() => setShowNewTicketModal(true)}
         portalMode={portalMode}
-        onSignOut={handleSignOut}
+        onSignOut={isAdmin ? handleAdminSignOut : handleSignOut}
         customerTickets={tickets.filter((t) => t.user_id === currentUser?.id)}
         selectedTicketId={selectedTicketId}
         onTicketSelect={handleTicketSelect}
