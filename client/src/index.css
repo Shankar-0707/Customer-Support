@@ -2319,6 +2319,13 @@ body {
 [data-theme="light"] .chat-send-btn,
 :root[data-theme="light"] .rating-btn.selected,
 [data-theme="light"] .rating-btn.selected {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+:root[data-theme="light"] .chat-send-btn:disabled,
+[data-theme="light"] .chat-send-btn:disabled {
   background: var(--color-surface-high);
   color: var(--color-text-muted);
   border-color: var(--color-surface-high);
