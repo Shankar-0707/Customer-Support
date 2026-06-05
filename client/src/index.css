@@ -13,8 +13,6 @@
   /* ── Core Palette (Dark Mode Monochrome) ── */
   --color-bg: #000000;
   --color-bg-warm: #050505;
-  background: #f5f5f5;
-  color: #000000;
   --color-surface: #1a1a1a;
   --color-surface-high: #2d2d2d;
   --color-surface-highest: #404040;
@@ -24,15 +22,6 @@
   --color-text-secondary: #a3a3a3;
   --color-text-muted: #525252;
   --color-text-inverse: #000000;
-  padding: 3px 6px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-surface);
-  font-size: 12px;
-  cursor: default;
-  outline: none;
-  font-weight: 600;
-  background: #ffffff;
-  color: #000000;
   --color-accent-light: #e5e5e5;
   --color-accent-muted: rgba(255, 255, 255, 0.05);
 
@@ -101,6 +90,13 @@
    2. BASE RESET
    ═══════════════════════════════════════ */
 
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -122,6 +118,11 @@ body {
   line-height: 1.5;
   overflow: hidden;
   text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100%;
+  background: var(--color-bg);
 }
 
 a { text-decoration: none; color: inherit; }
@@ -159,6 +160,10 @@ img { max-width: 100%; display: block; }
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+}
+
+.app-login-container {
+  flex-direction: column;
 }
 
 .main-content {
@@ -584,14 +589,14 @@ img { max-width: 100%; display: block; }
 }
 
 .header-avatar {
-  width: 28px;
-  height: 28px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 11px;
+  font-size: 13px;
   background: #ffffff;
   color: #000000;
   border: 1px solid #ffffff;
@@ -617,6 +622,20 @@ img { max-width: 100%; display: block; }
   background: #000000;
   color: #ffffff;
   border-color: #000000;
+}
+
+:root[data-theme="light"] .theme-toggle-btn,
+[data-theme="light"] .theme-toggle-btn {
+  background: #ffffff;
+  color: #111827;
+  border-color: #d9e2ef;
+}
+
+:root[data-theme="light"] .theme-toggle-btn:hover,
+[data-theme="light"] .theme-toggle-btn:hover {
+  background: #f8fafc;
+  color: #000000;
+  border-color: #cbd5e1;
 }
 
 /* ═══════════════════════════════════════
@@ -993,6 +1012,15 @@ img { max-width: 100%; display: block; }
   border-color: var(--color-surface);
 }
 
+:root[data-theme="light"] .badge-open,
+[data-theme="light"] .badge-open,
+:root[data-theme="light"] .badge-resolved,
+[data-theme="light"] .badge-resolved {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
 .priority-high, .priority-critical {
   color: #ff3333;
   font-weight: 600;
@@ -1158,6 +1186,18 @@ img { max-width: 100%; display: block; }
   background: var(--color-surface-lowest);
   color: var(--color-text-primary);
   border: 1px solid var(--color-surface);
+}
+
+:root[data-theme="light"] .message-bubble-wrapper.user .message-bubble,
+[data-theme="light"] .message-bubble-wrapper.user .message-bubble {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+:root[data-theme="light"] .message-bubble-wrapper.user .message-time,
+[data-theme="light"] .message-bubble-wrapper.user .message-time {
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .message-time {
@@ -2208,6 +2248,36 @@ body {
   border-color: #dbe4f0;
 }
 
+:root[data-theme="light"] .chat-resolved-banner,
+[data-theme="light"] .chat-resolved-banner,
+:root[data-theme="light"] .chat-side-resolved,
+[data-theme="light"] .chat-side-resolved {
+  background: #ffffff;
+  border-color: #dbe4f0;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="light"] .chat-resolved-banner-title,
+[data-theme="light"] .chat-resolved-banner-title,
+:root[data-theme="light"] .chat-side-resolved-title,
+[data-theme="light"] .chat-side-resolved-title {
+  color: #000000;
+}
+
+:root[data-theme="light"] .chat-resolved-banner p,
+[data-theme="light"] .chat-resolved-banner p,
+:root[data-theme="light"] .chat-side-resolved p,
+[data-theme="light"] .chat-side-resolved p {
+  color: #111827;
+}
+
+:root[data-theme="light"] .chat-resolved-banner-title .material-symbols-outlined,
+[data-theme="light"] .chat-resolved-banner-title .material-symbols-outlined,
+:root[data-theme="light"] .chat-side-resolved-title .material-symbols-outlined,
+[data-theme="light"] .chat-side-resolved-title .material-symbols-outlined {
+  color: #000000;
+}
+
 :root[data-theme="light"] .chat-input-bar,
 [data-theme="light"] .chat-input-bar {
   background: rgba(255, 255, 255, 0.94);
@@ -2247,8 +2317,6 @@ body {
 [data-theme="light"] .table-header-action,
 :root[data-theme="light"] .chat-send-btn,
 [data-theme="light"] .chat-send-btn,
-:root[data-theme="light"] .theme-toggle-btn,
-[data-theme="light"] .theme-toggle-btn,
 :root[data-theme="light"] .rating-btn.selected,
 [data-theme="light"] .rating-btn.selected {
   background: #111827;
@@ -2264,8 +2332,8 @@ body {
 [data-theme="light"] .table-header-action:hover,
 :root[data-theme="light"] .chat-send-btn:hover,
 [data-theme="light"] .chat-send-btn:hover,
-:root[data-theme="light"] .theme-toggle-btn:hover,
-[data-theme="light"] .theme-toggle-btn:hover {
+:root[data-theme="light"] .rating-btn.selected:hover,
+[data-theme="light"] .rating-btn.selected:hover {
   background: #000000;
   color: #ffffff;
   border-color: #000000;
@@ -2292,3 +2360,27 @@ body {
   color: #000000;
   border-color: #000000;
 }
+
+:root[data-theme="light"] .sidebar-brand-icon .material-symbols-outlined,
+[data-theme="light"] .sidebar-brand-icon .material-symbols-outlined,
+:root[data-theme="light"] .sidebar-nav-item .material-symbols-outlined,
+[data-theme="light"] .sidebar-nav-item .material-symbols-outlined,
+:root[data-theme="light"] .sidebar-ticket-item .material-symbols-outlined,
+[data-theme="light"] .sidebar-ticket-item .material-symbols-outlined,
+:root[data-theme="light"] .bento-card-title .material-symbols-outlined,
+[data-theme="light"] .bento-card-title .material-symbols-outlined,
+:root[data-theme="light"] .bento-card-accent .bento-card-title .material-symbols-outlined,
+[data-theme="light"] .bento-card-accent .bento-card-title .material-symbols-outlined,
+:root[data-theme="light"] .portal-welcome-feature-title .material-symbols-outlined,
+[data-theme="light"] .portal-welcome-feature-title .material-symbols-outlined,
+:root[data-theme="light"] .login-page-title .material-symbols-outlined,
+[data-theme="light"] .login-page-title .material-symbols-outlined,
+:root[data-theme="light"] .chat-inline-card-title .material-symbols-outlined,
+[data-theme="light"] .chat-inline-card-title .material-symbols-outlined,
+:root[data-theme="light"] .chat-resolved-banner-title .material-symbols-outlined,
+[data-theme="light"] .chat-resolved-banner-title .material-symbols-outlined,
+:root[data-theme="light"] .chat-side-resolved-title .material-symbols-outlined,
+[data-theme="light"] .chat-side-resolved-title .material-symbols-outlined {
+  color: var(--color-text-primary);
+}
+
