@@ -24,7 +24,8 @@ export async function generateAgentResponse(
     }));
 
     let systemInstruction = 
-      "You are an AI Customer Support Agent for a cloud software platform. You are helpful, professional, and concise. Always answer questions based on product knowledge. Do not make up answers.";
+      "You are an AI Customer Support Agent for a cloud software platform. You are helpful, professional, and concise. Always answer questions based on product knowledge. Do not make up answers.\n\n" +
+      "Before answering, internally compare the current customer issue with any supplied customer memory and global resolution memory. If a past memory describes the same or a very similar issue, use the remembered resolution immediately instead of treating the complaint as brand new.";
 
     if (customerMemories && customerMemories.trim() !== "" && customerMemories !== "FACTS: []") {
       systemInstruction += `\n\n[CUSTOMER PERSISTENT MEMORY (Current Customer Only)]:
@@ -32,8 +33,10 @@ Use the following recalled past tickets, interactions, environment info, and pre
 MEMORY USAGE RULES:
 1. Do not mention, announce, or summarize prior customer memory at the start of every answer.
 2. Do not say phrases like "I recall", "you previously asked", "in your previous ticket", or "based on your past chats" unless the user explicitly asks what they said before, asks you to remember something, or the prior fact is directly necessary to answer the current issue.
-3. If the current complaint is about a different topic, answer the current complaint normally and silently ignore unrelated customer memories.
-4. Use relevant customer memory quietly to personalize troubleshooting, avoid repeated questions, or maintain continuity when it materially helps.\n${customerMemories}`;
+3. If the current complaint matches an issue this same customer had before, treat it as a repeated issue on the first response. Briefly acknowledge continuity, e.g. "This looks like the same issue we handled earlier," then apply the previous resolution or ask only for the missing detail needed to confirm it.
+4. If customer memory includes how the issue was solved before, prioritize that fix and do not restart generic troubleshooting from step one.
+5. If the current complaint is about a different topic, answer the current complaint normally and silently ignore unrelated customer memories.
+6. Use relevant customer memory quietly to personalize troubleshooting, avoid repeated questions, or maintain continuity when it materially helps.\n${customerMemories}`;
     }
 
     if (sharedResolutions && sharedResolutions.trim() !== "" && sharedResolutions !== "FACTS: []") {
@@ -42,10 +45,11 @@ Use the following similar resolved cases from other customers as private backgro
 CRITICAL RULES:
 1. These resolutions belong to OTHER customers. They are NOT from the current customer's history.
 2. Never refer to these global memories as 'your previous conversation', 'our past discussion', 'as we discussed', or 'your setup'. 
-3. Do not announce that you checked global memory. Usually use matching global resolutions silently as general troubleshooting knowledge.
+3. If a global memory clearly matches the current issue, mention it naturally once, using wording like: "This issue has been encountered by other customers too, and it was resolved by..." Then give the applicable resolution.
 4. Do NOT assume the current customer has the same name, account settings, ID, or quantities (like number of backlogs or backs) mentioned in these global facts. 
 5. Never mix up other customers' specific details with the current customer's profile.
-6. If the global memory is unrelated to the current complaint, ignore it completely.\n${sharedResolutions}`;
+6. If the global memory is unrelated or only weakly related to the current complaint, ignore it completely and do not mention other customers.
+7. If both customer memory and global memory match, prioritize the current customer's previous resolution first, then mention the global pattern only if it adds useful confidence or a clearer fix.\n${sharedResolutions}`;
     }
 
     // Inject system prompt instructing the agent on its persona
@@ -108,9 +112,18 @@ function getSimulatedResponse(
     lastUserMessage.includes("before") ||
     lastUserMessage.includes("previous") ||
     lastUserMessage.includes("past");
+  const looksLikeSupportIssue =
+    lastUserMessage.includes("issue") ||
+    lastUserMessage.includes("error") ||
+    lastUserMessage.includes("bug") ||
+    lastUserMessage.includes("not working") ||
+    lastUserMessage.includes("failed") ||
+    lastUserMessage.includes("problem");
 
   if (hasCustomerMemories && asksAboutPastContext) {
     simulatedReply = `I checked your customer memory bank. Here is what I found:\n\n${customerMemories}`;
+  } else if (hasCustomerMemories && looksLikeSupportIssue) {
+    simulatedReply = `This looks similar to an issue we handled earlier. Based on the previous resolution, try the same fix first:\n\n${customerMemories}`;
   } else if (lastUserMessage.includes("rate limit") || lastUserMessage.includes("api")) {
     simulatedReply = `I understand you're facing API rate limiting issues. This typically happens when your request rate exceeds your current tier limits. 
     
@@ -131,8 +144,8 @@ Please confirm:
 I'm currently running in **Simulation Mode** because your \`GROQ_API_KEY\` is set to the default placeholder. To enable live AI intelligence, please add a valid Groq API key to your \`.env\` file in the project root!`;
   }
 
-  if (hasSharedResolutions && asksAboutPastContext) {
-    simulatedReply += `\n\nI also checked the global resolution bank for similar cases:\n\n${sharedResolutions}`;
+  if (hasSharedResolutions && looksLikeSupportIssue) {
+    simulatedReply += `\n\nThis issue has been encountered by other customers too, and similar cases were resolved this way:\n\n${sharedResolutions}`;
   }
 
   return `[🤖 Simulated AI Agent]\n\n${simulatedReply}`;
