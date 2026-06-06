@@ -33,10 +33,11 @@ Use the following recalled past tickets, interactions, environment info, and pre
 MEMORY USAGE RULES:
 1. Do not mention, announce, or summarize prior customer memory at the start of every answer.
 2. Do not say phrases like "I recall", "you previously asked", "in your previous ticket", or "based on your past chats" unless the user explicitly asks what they said before, asks you to remember something, or the prior fact is directly necessary to answer the current issue.
-3. If the current complaint matches an issue this same customer had before, treat it as a repeated issue on the first response. Briefly acknowledge continuity, e.g. "This looks like the same issue we handled earlier," then apply the previous resolution or ask only for the missing detail needed to confirm it.
+3. If the current complaint matches an issue this same customer had before on a different ticket not in the same ticket, treat it as a repeated issue on the first response. Briefly acknowledge continuity, e.g. "This looks like the same issue we handled earlier," then apply the previous resolution or ask only for the missing detail needed to confirm it.
 4. If customer memory includes how the issue was solved before, prioritize that fix and do not restart generic troubleshooting from step one.
 5. If the current complaint is about a different topic, answer the current complaint normally and silently ignore unrelated customer memories.
-6. Use relevant customer memory quietly to personalize troubleshooting, avoid repeated questions, or maintain continuity when it materially helps.\n${customerMemories}`;
+6. While answering the follow ups of the same chat, use previous memory to answer but do not use phrases like "This looks like the same issue we handled earlier,".
+7. Use relevant customer memory quietly to personalize troubleshooting, avoid repeated questions, or maintain continuity when it materially helps.\n${customerMemories}`;
     }
 
     if (sharedResolutions && sharedResolutions.trim() !== "" && sharedResolutions !== "FACTS: []") {

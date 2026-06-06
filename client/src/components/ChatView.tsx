@@ -9,6 +9,18 @@ interface ChatViewProps {
   viewMode?: 'agent' | 'customer';
 }
 
+function renderBoldText(content: string): React.ReactNode {
+  const parts = content.split(/(\*\*[^*]+\*\*)/g);
+
+  return parts.map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+
+    return <React.Fragment key={index}>{part}</React.Fragment>;
+  });
+}
+
 export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' }: ChatViewProps) {
   const [ticket, setTicket] = useState<(Ticket & { customer_name?: string; customer_email?: string; session_id?: string }) | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -279,7 +291,7 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
 
                 <div className={`message-bubble-wrapper ${isAgent ? 'agent' : 'user'}`}>
                   <div className="message-bubble">
-                    {msg.content}
+                    {renderBoldText(msg.content)}
                     <span className="message-time">
                       {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
