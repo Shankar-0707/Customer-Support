@@ -28,18 +28,24 @@ export async function generateAgentResponse(
 
     if (customerMemories && customerMemories.trim() !== "" && customerMemories !== "FACTS: []") {
       systemInstruction += `\n\n[CUSTOMER PERSISTENT MEMORY (Current Customer Only)]:
-Use the following recalled past tickets, interactions, environment info, and preferences for this specific customer. You can refer to this as their own past history (e.g., 'I recall you mentioned...' or 'in your previous ticket...'):\n${customerMemories}`;
+Use the following recalled past tickets, interactions, environment info, and preferences for this specific customer as private background context.
+MEMORY USAGE RULES:
+1. Do not mention, announce, or summarize prior customer memory at the start of every answer.
+2. Do not say phrases like "I recall", "you previously asked", "in your previous ticket", or "based on your past chats" unless the user explicitly asks what they said before, asks you to remember something, or the prior fact is directly necessary to answer the current issue.
+3. If the current complaint is about a different topic, answer the current complaint normally and silently ignore unrelated customer memories.
+4. Use relevant customer memory quietly to personalize troubleshooting, avoid repeated questions, or maintain continuity when it materially helps.\n${customerMemories}`;
     }
 
     if (sharedResolutions && sharedResolutions.trim() !== "" && sharedResolutions !== "FACTS: []") {
       systemInstruction += `\n\n[GLOBAL RESOLUTION MEMORY (Other Customers)]:
-Use the following similar resolved cases from other customers to guide your technical troubleshooting if they match the user's issue. 
+Use the following similar resolved cases from other customers as private background troubleshooting context only if they match the user's issue.
 CRITICAL RULES:
 1. These resolutions belong to OTHER customers. They are NOT from the current customer's history.
 2. Never refer to these global memories as 'your previous conversation', 'our past discussion', 'as we discussed', or 'your setup'. 
-3. If you use this information to answer, phrase it strictly as: 'Based on similar issues resolved for other customers...' or 'In similar cases, the resolution was...' or refer to it as general product/troubleshooting knowledge.
+3. Do not announce that you checked global memory. Usually use matching global resolutions silently as general troubleshooting knowledge.
 4. Do NOT assume the current customer has the same name, account settings, ID, or quantities (like number of backlogs or backs) mentioned in these global facts. 
-5. Never mix up other customers' specific details with the current customer's profile.\n${sharedResolutions}`;
+5. Never mix up other customers' specific details with the current customer's profile.
+6. If the global memory is unrelated to the current complaint, ignore it completely.\n${sharedResolutions}`;
     }
 
     // Inject system prompt instructing the agent on its persona
@@ -96,15 +102,14 @@ function getSimulatedResponse(
   let simulatedReply = "";
   const hasCustomerMemories = hasUsefulFacts(customerMemories);
   const hasSharedResolutions = hasUsefulFacts(sharedResolutions);
+  const asksAboutPastContext =
+    lastUserMessage.includes("remember") ||
+    lastUserMessage.includes("earlier") ||
+    lastUserMessage.includes("before") ||
+    lastUserMessage.includes("previous") ||
+    lastUserMessage.includes("past");
 
-  if (
-    hasCustomerMemories &&
-    (lastUserMessage.includes("remember") ||
-      lastUserMessage.includes("earlier") ||
-      lastUserMessage.includes("before") ||
-      lastUserMessage.includes("previous") ||
-      lastUserMessage.includes("past"))
-  ) {
+  if (hasCustomerMemories && asksAboutPastContext) {
     simulatedReply = `I checked your customer memory bank. Here is what I found:\n\n${customerMemories}`;
   } else if (lastUserMessage.includes("rate limit") || lastUserMessage.includes("api")) {
     simulatedReply = `I understand you're facing API rate limiting issues. This typically happens when your request rate exceeds your current tier limits. 
@@ -126,7 +131,7 @@ Please confirm:
 I'm currently running in **Simulation Mode** because your \`GROQ_API_KEY\` is set to the default placeholder. To enable live AI intelligence, please add a valid Groq API key to your \`.env\` file in the project root!`;
   }
 
-  if (hasSharedResolutions) {
+  if (hasSharedResolutions && asksAboutPastContext) {
     simulatedReply += `\n\nI also checked the global resolution bank for similar cases:\n\n${sharedResolutions}`;
   }
 
