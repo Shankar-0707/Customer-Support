@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { checkHealth, getTickets, getTicketsByUser, getUserById } from "./api";
 import type { Ticket, HealthCheckResponse, User } from "./types";
 import { getCookie, setCookie, deleteCookie } from "./utils/cookieUtils";
@@ -107,7 +107,7 @@ function App() {
   }, []);
 
   // 3. Fetch tickets
-  const loadTickets = async () => {
+  const loadTickets = useCallback(async () => {
     setLoadingTickets(true);
     try {
       // Admin sees all tickets; customers see only their own
@@ -124,21 +124,16 @@ function App() {
     } finally {
       setLoadingTickets(false);
     }
-  };
+  }, [isAdmin, currentUser]);
 
   useEffect(() => {
     loadTickets();
-  }, []);
+  }, [loadTickets]);
 
   // Handle successful login
   const handleIdentifySuccess = (user: User) => {
     setCookie("customer_session_id", user.id, 7); // Save session cookie for 7 days
     setCurrentUser(user);
-    // Load tickets for the newly identified user directly
-    setLoadingTickets(true);
-    getTicketsByUser(user.id).then((res) => {
-      if (res.success && res.data) setTickets(res.data);
-    }).catch(() => {}).finally(() => setLoadingTickets(false));
   };
 
   // Handle Sign Out
