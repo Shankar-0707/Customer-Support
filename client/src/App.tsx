@@ -11,6 +11,7 @@ import ChatView from "./components/ChatView";
 import NewTicketModal from "./components/NewTicketModal";
 import CustomerLogin from "./components/CustomerLogin";
 import AdminLogin from "./components/AdminLogin";
+import Loading from "./components/Loading";
 
 function App() {
   // 1. Path-based Routing
@@ -296,12 +297,7 @@ function App() {
 
   // 1. Render Loading State (For checking cookie session on Customer mode)
   if (loadingSession) {
-    return (
-      <div className="loading-screen">
-        <div className="loading-spinner" />
-        <span>Verifying support portal session...</span>
-      </div>
-    );
+    return <Loading message="Verifying support portal session..." fullScreen />;
   }
 
   // 2. Admin gate — show password screen if admin hasn't authenticated

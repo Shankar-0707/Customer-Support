@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getTicket, getSessionMessages, sendMessage, resolveTicket } from "../api";
 import type { Ticket, Message } from "../types";
+import Loading from "./Loading";
 
 interface ChatViewProps {
   ticketId: string;
@@ -105,12 +106,7 @@ export default function ChatView({ ticketId, onStatusUpdate, viewMode = 'agent' 
   };
 
   if (loading) {
-    return (
-      <div className="loading-screen">
-        <div className="loading-spinner" />
-        <span>Loading chat history...</span>
-      </div>
-    );
+    return <Loading message="Loading chat history..." />;
   }
 
   if (!ticket) {
